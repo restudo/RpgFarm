@@ -93,20 +93,26 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
 
             Vector3 worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -mainCamera.transform.position.z));
 
-            // Create item from prefab at mouse position
-            GameObject itemGameObject = Instantiate(itemPrefab, worldPosition, Quaternion.identity, parentItem);
-            Item item = itemGameObject.GetComponent<Item>();
-            item.ItemCode = itemDetails.itemCode;
+            // If can drop item here
+            Vector3Int gridPosition = GridPropertiesManager.Instance.grid.WorldToCell(worldPosition);
+            GridPropertyDetails gridPropertyDetails = GridPropertiesManager.Instance.GetGridPropertyDetails(gridPosition.x, gridPosition.y);
 
-            // Remove item from players inventory
-            InventoryManager.Instance.RemoveItem(InventoryLocation.player, item.ItemCode);
-
-            // If no more of item then clear selected
-            if (InventoryManager.Instance.FindItemInInventory(InventoryLocation.player, item.ItemCode) == -1)
+            if (gridPropertyDetails != null && gridPropertyDetails.canDropItem)
             {
-                ClearSelectedItem();
-            }
+                // Create item from prefab at mouse position
+                GameObject itemGameObject = Instantiate(itemPrefab, new Vector3(worldPosition.x, worldPosition.y - Settings.gridCellSize / 2f, worldPosition.z), Quaternion.identity, parentItem);
+                Item item = itemGameObject.GetComponent<Item>();
+                item.ItemCode = itemDetails.itemCode;
 
+                // Remove item from players inventory
+                InventoryManager.Instance.RemoveItem(InventoryLocation.player, item.ItemCode);
+
+                // If no more of item then clear selected
+                if (InventoryManager.Instance.FindItemInInventory(InventoryLocation.player, item.ItemCode) == -1)
+                {
+                    ClearSelectedItem();
+                }
+            }
 
         }
     }

@@ -1,22 +1,20 @@
 ﻿
 using UnityEngine;
 
-public static class Settings 
+public static class Settings
 {
     // Obscuring Item Fading - ObscuringItemFader
     public const float fadeInSeconds = 0.25f;
     public const float fadeOutSeconds = 0.35f;
     public const float targetAlpha = 0.45f;
 
-    // Player Movement
-    public const float runningSpeed = 5.333f;
-    public const float walkingSpeed = 2.666f;
-
+    // Tilemap
+    public const float gridCellSize = 1f; // grid cell size in unity units
     // Inventory
     public static int playerInitialInventoryCapacity = 24;
     public static int playerMaximumInventoryCapacity = 48;
 
-        // Player Animation Parameters
+    // Player Animation Parameters
     public static int xInput;
     public static int yInput;
     public static int isWalking;

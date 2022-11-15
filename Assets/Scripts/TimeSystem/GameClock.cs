@@ -7,7 +7,7 @@ public class GameClock : MonoBehaviour
     [SerializeField] private TextMeshProUGUI timeText = null;
     [SerializeField] private TextMeshProUGUI dateText = null;
     [SerializeField] private TextMeshProUGUI seasonText = null;
-    [SerializeField] private TextMeshProUGUI yearText = null;
+    [SerializeField] private TextMeshProUGUI gameDayOfWeekText = null;
 
 
     private void OnEnable()
@@ -28,6 +28,7 @@ public class GameClock : MonoBehaviour
 
         string ampm = "";
         string minute;
+        string day;
 
         if (gameHour >= 12)
         {
@@ -52,13 +53,22 @@ public class GameClock : MonoBehaviour
             minute = gameMinute.ToString();
         }
 
+        if (gameDay < 10)
+        {
+            day = "0" + gameDay.ToString();
+        }
+        else
+        {
+            day = gameDay.ToString();
+        }
+
         string time = gameHour.ToString() + " : " + minute + ampm;
 
 
-        timeText.SetText(time);
-        dateText.SetText(gameDayOfWeek + ". " + gameDay.ToString());
         seasonText.SetText(gameSeason.ToString());
-        yearText.SetText("Year " + gameYear);
+        dateText.SetText("Tgl. " + day);
+        timeText.SetText(time);
+        gameDayOfWeekText.SetText(gameDayOfWeek);
     }
 
 }

@@ -1,4 +1,13 @@
 ﻿
+public enum GridBoolProperty
+{
+    diggable,
+    canDropItem,
+    canPlaceFurniture,
+    isPath,
+    isNPCObstacle
+}
+
 public enum InventoryLocation
 {
     player,
@@ -15,10 +24,8 @@ public enum SceneName
 
 public enum Season
 {
-    Spring,
-    Summer,
-    Autumn,
-    Winter,
+    Kemarau,
+    Penghujan,
     none,
     count
 }

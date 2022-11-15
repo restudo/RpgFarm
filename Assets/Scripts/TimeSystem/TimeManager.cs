@@ -6,12 +6,12 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>
 {
 
     private int gameYear = 1;
-    private Season gameSeason = Season.Spring;
+    private Season gameSeason = Season.Kemarau;
     private int gameDay = 1;
     private int gameHour = 6;
     private int gameMinute = 30;
     private int gameSecond = 0;
-    private string gameDayOfWeek = "Mon";
+    private string gameDayOfWeek = "Senin";
 
     private bool gameClockPaused = false;
 
@@ -110,25 +110,25 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>
         switch (dayOfWeek)
         {
             case 1:
-                return "Mon";
+                return "Senin";
 
             case 2:
-                return "Tue";
+                return "Selasa";
 
             case 3:
-                return "Wed";
+                return "Rabu";
 
             case 4:
-                return "Thu";
+                return "Kamis";
 
             case 5:
-                return "Fri";
+                return "Jumat";
 
             case 6:
-                return "Sat";
+                return "Sabtu";
 
             case 0:
-                return "Sun";
+                return "Minggu";
 
             default:
                 return "";
