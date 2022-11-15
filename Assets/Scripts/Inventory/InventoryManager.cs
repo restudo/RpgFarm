@@ -10,7 +10,8 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
     private int[] selectedInventoryItem; // the index of the array is the inventory list, and the value is the item code
     public List<InventoryItem>[] inventoryLists;
 
-    [HideInInspector] public int[] inventoryListCapacityIntArray; // the index of the array is the inventory list (from the InventoryLocation enum), and the value is the capacity of that inventory list
+    [HideInInspector] public int[] inventoryListCapacityIntArray;   // the index of the array is the inventory list (from the InventoryLocation enum), 
+                                                                    //and the value is the capacity of that inventory list
 
     [SerializeField] private SO_ItemList itemList = null;
 
@@ -49,6 +50,7 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
 
         // initialise player inventory list capacity
         inventoryListCapacityIntArray[(int)InventoryLocation.player] = Settings.playerInitialInventoryCapacity;
+        inventoryListCapacityIntArray[(int)InventoryLocation.chest] = Settings.ChestInitialInventoryCapacity;
     }
 
     /// <summary>
@@ -69,8 +71,21 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
     /// </summary>
     public void AddItem(InventoryLocation inventoryLocation, Item item, GameObject gameObjectToDelete)
     {
-        AddItem(inventoryLocation, item);
+        List<InventoryItem> inventoryList = inventoryLists[(int)inventoryLocation];
+        for (int i = 0; i < inventoryList.Count; i++)
+        {
+            if (inventoryList[i].itemCode == item.ItemCode)
+            {
+                if (inventoryList[i].itemQuantity == maxStack)
+                {
+                    Debug.Log("Jenis item tersebut sudah penuh");
+                    return;
+                }
+                break;
+            }
+        }
 
+        AddItem(inventoryLocation, item);
         Destroy(gameObjectToDelete);
     }
 
@@ -250,15 +265,14 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
     public int FindItemInInventory(InventoryLocation inventoryLocation, int itemCode)
     {
         List<InventoryItem> inventoryList = inventoryLists[(int)inventoryLocation];
+
         for (int i = 0; i < inventoryList.Count; i++)
         {
             if (inventoryList[i].itemCode == itemCode)
             {
                 return i;
             }
-
         }
-
         return -1;
     }
 

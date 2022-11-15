@@ -10,9 +10,13 @@ public static class Settings
 
     // Tilemap
     public const float gridCellSize = 1f; // grid cell size in unity units
+
     // Inventory
     public static int playerInitialInventoryCapacity = 24;
     public static int playerMaximumInventoryCapacity = 48;
+
+    // chest inventory
+    public static int ChestInitialInventoryCapacity = 12;
 
     // Player Animation Parameters
     public static int xInput;
