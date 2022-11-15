@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class InventoryManager :SingletonMonobehaviour<InventoryManager>
+public class InventoryManager : SingletonMonobehaviour<InventoryManager>
 {
+    private int maxStack = 3;
+
     private Dictionary<int, ItemDetails> itemDetailsDictionary;
 
     private int[] selectedInventoryItem; // the index of the array is the inventory list, and the value is the item code
-
     public List<InventoryItem>[] inventoryLists;
 
     [HideInInspector] public int[] inventoryListCapacityIntArray; // the index of the array is the inventory list (from the InventoryLocation enum), and the value is the capacity of that inventory list
@@ -31,7 +32,6 @@ public class InventoryManager :SingletonMonobehaviour<InventoryManager>
         {
             selectedInventoryItem[i] = -1;
         }
-
 
     }
 
@@ -125,7 +125,7 @@ public class InventoryManager :SingletonMonobehaviour<InventoryManager>
         inventoryItem.itemCode = itemCode;
         inventoryList[position] = inventoryItem;
 
-        
+
         //DebugPrintInventoryList(inventoryList);
     }
 
@@ -158,27 +158,6 @@ public class InventoryManager :SingletonMonobehaviour<InventoryManager>
         selectedInventoryItem[(int)inventoryLocation] = -1;
     }
 
-
-
-    /// <summary>
-    /// Find if an itemCode is already in the inventory. Returns the item position
-    /// in the inventory list, or -1 if the item is not in the inventory
-    /// </summary>
-    public int FindItemInInventory(InventoryLocation inventoryLocation, int itemCode)
-    {
-        List<InventoryItem> inventoryList = inventoryLists[(int)inventoryLocation];
-
-        for (int i = 0; i < inventoryList.Count; i++)
-        {
-            if (inventoryList[i].itemCode == itemCode)
-            {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
     /// <summary>
     /// Returns the itemDetails (from the SO_ItemList) for the itemCode, or null if the item code doesn't exist
     /// </summary>
@@ -195,6 +174,32 @@ public class InventoryManager :SingletonMonobehaviour<InventoryManager>
         {
             return null;
         }
+    }
+
+    /// <summary>
+    /// Returns the itemDetails (from the SO_ItemList) for the currently selected item in the inventoryLocation , or null if an item isn't selected
+    /// </summary>
+    public ItemDetails GetSelectedInventoryItemDetails(InventoryLocation inventoryLocation)
+    {
+        int itemCode = GetSelectedInventoryItem(inventoryLocation);
+
+        if (itemCode == -1)
+        {
+            return null;
+        }
+        else
+        {
+            return GetItemDetails(itemCode);
+        }
+    }
+
+
+    /// <summary>
+    /// Get the selected item for inventoryLocation - returns itemCode or -1 if nothing is selected
+    /// </summary>
+    private int GetSelectedInventoryItem(InventoryLocation inventoryLocation)
+    {
+        return selectedInventoryItem[(int)inventoryLocation];
     }
 
     /// <summary>
@@ -238,6 +243,24 @@ public class InventoryManager :SingletonMonobehaviour<InventoryManager>
         return itemTypeDescription;
     }
 
+    /// <summary>
+    /// Find if an itemCode is already in the inventory. Returns the item position
+    /// in the inventory list, or -1 if the item is not in the inventory
+    /// </summary>
+    public int FindItemInInventory(InventoryLocation inventoryLocation, int itemCode)
+    {
+        List<InventoryItem> inventoryList = inventoryLists[(int)inventoryLocation];
+        for (int i = 0; i < inventoryList.Count; i++)
+        {
+            if (inventoryList[i].itemCode == itemCode)
+            {
+                return i;
+            }
+
+        }
+
+        return -1;
+    }
 
     /// <summary>
     /// Remove an item from the inventory, and create a game object at the position it was dropped
@@ -284,7 +307,6 @@ public class InventoryManager :SingletonMonobehaviour<InventoryManager>
     {
         selectedInventoryItem[(int)inventoryLocation] = itemCode;
     }
-
 
     //private void DebugPrintInventoryList(List<InventoryItem> inventoryList)
     //{
