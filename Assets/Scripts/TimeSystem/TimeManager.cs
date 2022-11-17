@@ -8,6 +8,7 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>
     private int gameYear = 1;
     private Season gameSeason = Season.Kemarau;
     private int gameDay = 1;
+    private int gameDayUnreset = 1;
     private int gameHour = 6;
     private int gameMinute = 30;
     private int gameSecond = 0;
@@ -61,6 +62,7 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>
                 {
                     gameHour = 0;
                     gameDay++;
+                    gameDayUnreset++;
 
                     if (gameDay > 30)
                     {
@@ -71,7 +73,7 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>
 
                         gameSeason = (Season)gs;
 
-                        if (gs > 3)
+                        if (gs > 1)
                         {
                             gs = 0;
                             gameSeason = (Season)gs;
@@ -104,8 +106,8 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>
 
     private string GetDayOfWeek()
     {
-        int totalDays = (((int)gameSeason) * 30) + gameDay;
-        int dayOfWeek = totalDays % 7;
+        // int totalDays = (((int)gameSeason) * 30) + gameDay;
+        int dayOfWeek = gameDayUnreset % 7;
 
         switch (dayOfWeek)
         {

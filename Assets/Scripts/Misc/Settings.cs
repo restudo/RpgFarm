@@ -10,6 +10,7 @@ public static class Settings
 
     // Tilemap
     public const float gridCellSize = 1f; // grid cell size in unity units
+    public static Vector2 cursorSize = Vector2.one;
 
     // Inventory
     public static int playerInitialInventoryCapacity = 24;
@@ -17,6 +18,10 @@ public static class Settings
 
     // chest inventory
     public static int ChestInitialInventoryCapacity = 12;
+
+    // player
+    public static float useToolAnimationPause = 0.25f;
+    public static float afterUseToolAnimationPause = 0.2f;
 
     // Player Animation Parameters
     public static int xInput;

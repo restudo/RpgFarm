@@ -50,6 +50,8 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
 
         // initialise player inventory list capacity
         inventoryListCapacityIntArray[(int)InventoryLocation.player] = Settings.playerInitialInventoryCapacity;
+
+        // initialise chest inventory list capacity
         inventoryListCapacityIntArray[(int)InventoryLocation.chest] = Settings.ChestInitialInventoryCapacity;
     }
 
