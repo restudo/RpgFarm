@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90788ba689cddf54da6ba19a966ecf12, type: 3}
   m_Name: TestItem 1
   m_EditorClassIdentifier: 
-  id: 0
+  id: 1
   itemType: 0
-  displayName: test item 01
-  description: this is a test
+  displayName: test item 02
+  description: this is a another test
   icon: {fileID: 0}
-  maxStackSize: 3
+  maxStackSize: 1
   itemUseGridRadius: 2
   itemUseRadius: 0
   isStartingItem: 0
