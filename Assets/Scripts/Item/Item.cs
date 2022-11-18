@@ -2,7 +2,7 @@
 
 public class Item : MonoBehaviour
 {
-    [ItemCodeDescription]
+    // [ItemCodeDescription]
     [SerializeField]
     private int _itemCode;
 
@@ -23,7 +23,7 @@ public class Item : MonoBehaviour
         }
     }
 
-    public void Init (int itemCodeParam)
+    public void Init(int itemCodeParam)
     {
         if (itemCodeParam != 0)
         {

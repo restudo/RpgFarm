@@ -16,6 +16,7 @@ public class InventoryHolder : MonoBehaviour
 
     void Awake()
     {
-        inventorySystem = new InventorySystem(Settings.playerInitialInventoryCapacity);
+        // inventorySystem = new InventorySystem(Settings.playerInitialInventoryCapacity);
+        inventorySystem = new InventorySystem(10);
     }
 }

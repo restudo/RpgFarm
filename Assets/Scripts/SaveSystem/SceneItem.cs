@@ -3,7 +3,7 @@ public class SceneItem
 {
     public int itemCode;
     public Vector3Serializable position;
-    public string itemName;
+    // public string itemName;
 
     public SceneItem()
     {

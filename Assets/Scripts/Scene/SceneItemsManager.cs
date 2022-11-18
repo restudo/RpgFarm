@@ -58,8 +58,19 @@ public class SceneItemsManager : SingletonMonobehaviour<SceneItemsManager>, ISav
 
             Item item = itemGameObject.GetComponent<Item>();
             item.ItemCode = sceneItem.itemCode;
-            item.name = sceneItem.itemName;
+            // item.name = sceneItem.itemName;
         }
+
+        // new inventory item
+        // GameObject itemPickupGameObject;
+
+        // foreach (SceneItem sceneItem1 in sceneItemList)
+        // {
+        //     itemPickupGameObject = Instantiate(itemPrefab, new Vector3(sceneItem1.position.x, sceneItem1.position.y, sceneItem1.position.z), Quaternion.identity, parentItem);
+
+        //     ItemPickedUp itemPickup = itemPickupGameObject.GetComponent<ItemPickedUp>();
+        //     itemPickup.ItemID = sceneItem1.itemCode;
+        // }
     }
 
     private void OnDisable()
@@ -108,17 +119,31 @@ public class SceneItemsManager : SingletonMonobehaviour<SceneItemsManager>, ISav
         List<SceneItem> sceneItemList = new List<SceneItem>();
         Item[] itemsInScene = FindObjectsOfType<Item>();
 
-        // Loop through all scene items
+        // // Loop through all scene items
         foreach (Item item in itemsInScene)
         {
             SceneItem sceneItem = new SceneItem();
             sceneItem.itemCode = item.ItemCode;
             sceneItem.position = new Vector3Serializable(item.transform.position.x, item.transform.position.y, item.transform.position.z);
-            sceneItem.itemName = item.name;
+            // sceneItem.itemName = item.name;
 
             // Add scene item to list
             sceneItemList.Add(sceneItem);
         }
+
+        // new inventory item
+        // ItemPickedUp[] itemInScene = FindObjectsOfType<ItemPickedUp>();
+
+        // foreach (ItemPickedUp item in itemInScene)
+        // {
+        //     SceneItem sceneItem = new SceneItem();
+        //     sceneItem.itemCode = item.ItemID;
+        //     sceneItem.position = new Vector3Serializable(item.transform.position.x, item.transform.position.y, item.transform.position.z);
+        //     // sceneItem.itemName = item.name;
+
+        //     // Add scene item to list
+        //     sceneItemList.Add(sceneItem);
+        // }
 
         // Create list scene items in scene save and set to scene item list
         SceneSave sceneSave = new SceneSave();
