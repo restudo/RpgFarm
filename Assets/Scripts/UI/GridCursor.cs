@@ -197,7 +197,7 @@ public class GridCursor : MonoBehaviour
         switch (itemDetails.itemType)
         {
             case ItemType.Hoeing_tool:
-                if (gridPropertyDetails.isDiggable == true && gridPropertyDetails.daysSinceDug == -1)
+                if (gridPropertyDetails.isDiggable == true)
                 {
                     #region Need to get any items at location so we can check if they are reapable
                     // Get world position for cursor

@@ -154,10 +154,7 @@ public class Player : SingletonMonobehaviour<Player>
                     break;
 
                 case ItemType.Hoeing_tool:
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        ProcessPlayerClickInputTool(gridPropertyDetails, itemDetails, playerDirection);
-                    }
+                    ProcessPlayerClickInputTool(gridPropertyDetails, itemDetails, playerDirection);
                     break;
 
                 case ItemType.none:
@@ -269,6 +266,9 @@ public class Player : SingletonMonobehaviour<Player>
 
         // Set grid property to dug
         GridPropertiesManager.Instance.SetGridPropertyDetails(gridPropertyDetails.gridX, gridPropertyDetails.gridY, gridPropertyDetails);
+
+        // Display dug grid tiles
+        GridPropertiesManager.Instance.DisplayDugGround(gridPropertyDetails);
 
         // After animation pause
         yield return afterUseToolAnimationPause;
