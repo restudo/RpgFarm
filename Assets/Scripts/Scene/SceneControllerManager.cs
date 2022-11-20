@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -10,6 +10,7 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
     [SerializeField] private float fadeDuration = 1f;
     [SerializeField] private CanvasGroup faderCanvasGroup = null;
     [SerializeField] private Image faderImage = null;
+
     public SceneName startingSceneName;
 
 
@@ -87,7 +88,7 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
         yield return SceneManager.LoadSceneAsync(sceneName, LoadSceneMode.Additive);
 
         // Find the scene that was most recently loaded (the one at the last index of the loaded scenes).
-        Scene newlyLoadedScene = SceneManager.GetSceneAt(SceneManager.sceneCount - 1);
+        Scene newlyLoadedScene = SceneManager.GetSceneByName(sceneName);
 
         // Set the newly loaded scene as the active scene (this marks it as the one to be unloaded next).
         SceneManager.SetActiveScene(newlyLoadedScene);
