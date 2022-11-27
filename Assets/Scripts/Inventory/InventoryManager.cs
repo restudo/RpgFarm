@@ -52,7 +52,7 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
         inventoryListCapacityIntArray[(int)InventoryLocation.player] = Settings.playerInitialInventoryCapacity;
 
         // initialise chest inventory list capacity
-        inventoryListCapacityIntArray[(int)InventoryLocation.chest] = Settings.ChestInitialInventoryCapacity;
+        // inventoryListCapacityIntArray[(int)InventoryLocation.chest] = Settings.ChestInitialInventoryCapacity;
     }
 
     /// <summary>
@@ -73,20 +73,6 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
     /// </summary>
     public void AddItem(InventoryLocation inventoryLocation, Item item, GameObject gameObjectToDelete)
     {
-        List<InventoryItem> inventoryList = inventoryLists[(int)inventoryLocation];
-        for (int i = 0; i < inventoryList.Count; i++)
-        {
-            if (inventoryList[i].itemCode == item.ItemCode)
-            {
-                if (inventoryList[i].itemQuantity == maxStack)
-                {
-                    Debug.Log("Jenis item tersebut sudah penuh");
-                    return;
-                }
-                break;
-            }
-        }
-
         AddItem(inventoryLocation, item);
         Destroy(gameObjectToDelete);
     }
@@ -158,6 +144,9 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
         {
             InventoryItem fromInventoryItem = inventoryLists[(int)inventoryLocation][fromItem];
             InventoryItem toInventoryItem = inventoryLists[(int)inventoryLocation][toItem];
+
+            Debug.Log("From item qty : " + fromInventoryItem.itemQuantity);
+            Debug.Log("To item qty : " + toInventoryItem.itemQuantity);
 
             inventoryLists[(int)inventoryLocation][toItem] = fromInventoryItem;
             inventoryLists[(int)inventoryLocation][fromItem] = toInventoryItem;
@@ -270,7 +259,11 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
 
         for (int i = 0; i < inventoryList.Count; i++)
         {
-            if (inventoryList[i].itemCode == itemCode)
+            if (inventoryList[i].itemQuantity == maxStack)
+            {
+                continue;
+            }
+            else if (inventoryList[i].itemCode == itemCode)
             {
                 return i;
             }
@@ -281,12 +274,12 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
     /// <summary>
     /// Remove an item from the inventory, and create a game object at the position it was dropped
     /// </summary>
-    public void RemoveItem(InventoryLocation inventoryLocation, int itemCode)
+    public void RemoveItem(InventoryLocation inventoryLocation, int itemCode, int itemPosition)
     {
         List<InventoryItem> inventoryList = inventoryLists[(int)inventoryLocation];
 
         // Check if inventory already contains the item
-        int itemPosition = FindItemInInventory(inventoryLocation, itemCode);
+        // int itemPosition = FindItemInInventory(inventoryLocation, itemCode);
 
         if (itemPosition != -1)
         {

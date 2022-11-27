@@ -21,7 +21,9 @@ public static class Settings
 
     // player
     public static float useToolAnimationPause = 0.25f;
+    public static float liftToolAnimationPause = 0.4f;
     public static float afterUseToolAnimationPause = 0.2f;
+    public static float afterLiftToolAnimationPause = 0.4f;
 
     // Player Animation Parameters
     public static int xInput;

@@ -2195,6 +2195,23 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d1affab743f137f4da9f82b0a2cecfdb, type: 2}
   - {fileID: 11400000, guid: 7b484963e17274040bbbbff4959293e0, type: 2}
   - {fileID: 11400000, guid: 93f6522749658c04ea454df5dd540cdf, type: 2}
+  wateredGround:
+  - {fileID: 11400000, guid: d70ccc3a704f6a14bb8c7fa54bcd5db9, type: 2}
+  - {fileID: 11400000, guid: 50a5e0fb558757b47b1c6dfa6c945a78, type: 2}
+  - {fileID: 11400000, guid: 9006c83b7b4c5c34daf449f14ba20a68, type: 2}
+  - {fileID: 11400000, guid: 5ed676531f70f9546b008b31e7c30146, type: 2}
+  - {fileID: 11400000, guid: 336b2a8198c2b784491c04d6277e9530, type: 2}
+  - {fileID: 11400000, guid: 0ffdcff720a721642a06c35386707d39, type: 2}
+  - {fileID: 11400000, guid: ecb1dd810916e9e43b135a4b1af52c74, type: 2}
+  - {fileID: 11400000, guid: 1e3db352490580144806984520c043dc, type: 2}
+  - {fileID: 11400000, guid: 96a83e696af40264db654e9f95388701, type: 2}
+  - {fileID: 11400000, guid: 981c8a75451d6a24d8484ae85c44a36d, type: 2}
+  - {fileID: 11400000, guid: 5edc696d37226894d9b71111acf584cd, type: 2}
+  - {fileID: 11400000, guid: 884aa28f9bfcd4d4b95db23d624b3baf, type: 2}
+  - {fileID: 11400000, guid: 062c9a99a6d71714db469587a45972c0, type: 2}
+  - {fileID: 11400000, guid: a8766ed3f73bccf45ba0041079e81cf0, type: 2}
+  - {fileID: 11400000, guid: 88dfc96091017004d99700e14c0b038a, type: 2}
+  - {fileID: 11400000, guid: bb73ca719033b104994e563c96eff230, type: 2}
 --- !u!114 &1518771672
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3310,7 +3327,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Tgl. 1
+  m_text: Tgl. 01
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 767ebbaa61c49b44c9b23b75fefc9380, type: 2}
   m_sharedMaterial: {fileID: 6101446161973834492, guid: 767ebbaa61c49b44c9b23b75fefc9380, type: 2}

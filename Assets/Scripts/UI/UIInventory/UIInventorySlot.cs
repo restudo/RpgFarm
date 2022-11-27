@@ -128,7 +128,7 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 item.ItemCode = itemDetails.itemCode;
 
                 // Remove item from players inventory
-                InventoryManager.Instance.RemoveItem(InventoryLocation.player, item.ItemCode);
+                InventoryManager.Instance.RemoveItem(InventoryLocation.player, item.ItemCode, slotNumber);
 
                 // If no more of item then clear selected
                 if (InventoryManager.Instance.FindItemInInventory(InventoryLocation.player, item.ItemCode) == -1)
@@ -210,6 +210,9 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         // if left click
         if (eventData.button == PointerEventData.InputButton.Left)
         {
+            // Debug.Log(transform.GetSiblingIndex());
+
+
             // if inventory slot currently selected then deselect
             if (isSelected == true)
             {

@@ -9,6 +9,8 @@ public class Player : SingletonMonobehaviour<Player>
     private bool playerToolUseDisabled = false;
     private WaitForSeconds useToolAnimationPause;
     private WaitForSeconds afterUseToolAnimationPause;
+    private WaitForSeconds liftToolAnimationPause;
+    private WaitForSeconds afterLiftToolAnimationPause;
 
     private GridCursor gridCursor;
 
@@ -49,7 +51,9 @@ public class Player : SingletonMonobehaviour<Player>
         gridCursor = FindObjectOfType<GridCursor>();
 
         useToolAnimationPause = new WaitForSeconds(Settings.useToolAnimationPause);
+        liftToolAnimationPause = new WaitForSeconds(Settings.liftToolAnimationPause);
         afterUseToolAnimationPause = new WaitForSeconds(Settings.afterUseToolAnimationPause);
+        afterLiftToolAnimationPause = new WaitForSeconds(Settings.afterLiftToolAnimationPause);
     }
 
     void Update()
@@ -153,6 +157,7 @@ public class Player : SingletonMonobehaviour<Player>
                     }
                     break;
 
+                case ItemType.Watering_tool:
                 case ItemType.Hoeing_tool:
                     ProcessPlayerClickInputTool(gridPropertyDetails, itemDetails, playerDirection);
                     break;
@@ -217,6 +222,13 @@ public class Player : SingletonMonobehaviour<Player>
                 }
                 break;
 
+            case ItemType.Watering_tool:
+                if (gridCursor.CursorPositionIsValid)
+                {
+                    WaterGroundAtCursor(gridPropertyDetails, playerDirection);
+                }
+                break;
+
             default:
                 break;
         }
@@ -272,6 +284,66 @@ public class Player : SingletonMonobehaviour<Player>
 
         // After animation pause
         yield return afterUseToolAnimationPause;
+
+        anim.SetBool(isUsingHoe, false);
+
+        playerInputIsDisabled = false;
+        playerToolUseDisabled = false;
+    }
+
+    private void WaterGroundAtCursor(GridPropertyDetails gridPropertyDetails, Vector3Int playerDirection)
+    {
+        // Trigger animation
+        StartCoroutine(WaterGroundAtCursorRoutine(playerDirection, gridPropertyDetails));
+    }
+
+    private IEnumerator WaterGroundAtCursorRoutine(Vector3Int playerDirection, GridPropertyDetails gridPropertyDetails)
+    {
+        playerInputIsDisabled = true;
+        playerToolUseDisabled = true;
+
+        // Set tool animation to watering can in override animation
+        // toolCharacterAttribute.partVariantType = PartVariantType.wateringCan;
+        // characterAttributeCustomisationList.Clear();
+        // characterAttributeCustomisationList.Add(toolCharacterAttribute);
+        // animationOverrides.ApplyCharacterCustomisationParameters(characterAttributeCustomisationList);
+
+        // TODO: If there is water in the watering can
+        // toolEffect = ToolEffect.watering;
+
+        if (playerDirection == Vector3Int.right)
+        {
+            if (!facingRight)
+            {
+                Flip();
+            }
+            anim.SetBool(isUsingHoe, true);
+        }
+        else if (playerDirection == Vector3Int.left)
+        {
+            if (facingRight)
+            {
+                Flip();
+            }
+            anim.SetBool(isUsingHoe, true);
+        }
+
+        yield return liftToolAnimationPause;
+
+        // Set Grid property details for watered ground
+        if (gridPropertyDetails.daysSinceWatered == -1)
+        {
+            gridPropertyDetails.daysSinceWatered = 0;
+        }
+
+        // Set grid property to watered
+        GridPropertiesManager.Instance.SetGridPropertyDetails(gridPropertyDetails.gridX, gridPropertyDetails.gridY, gridPropertyDetails);
+
+        // Display watered grid tiles
+        GridPropertiesManager.Instance.DisplayWateredGround(gridPropertyDetails);
+
+        // After animation pause
+        yield return afterLiftToolAnimationPause;
 
         anim.SetBool(isUsingHoe, false);
 
