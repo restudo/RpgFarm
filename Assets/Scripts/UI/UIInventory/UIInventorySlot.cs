@@ -24,6 +24,7 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     [SerializeField] private GameObject itemPrefab = null;
     [HideInInspector] public int itemQuantity;
     [SerializeField] private int slotNumber = 0;
+    public int SlotNumber { get { return slotNumber; } }
 
     private void Awake()
     {
@@ -33,12 +34,14 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     private void OnDisable()
     {
         EventHandler.AfterSceneLoadEvent -= SceneLoaded;
+        EventHandler.RemoveSelectedItemFromInventoryEvent -= RemoveSelectedItemFromInventory;
         EventHandler.DropSelectedItemEvent -= DropSelectedItemAtMousePosition;
     }
 
     private void OnEnable()
     {
         EventHandler.AfterSceneLoadEvent += SceneLoaded;
+        EventHandler.RemoveSelectedItemFromInventoryEvent += RemoveSelectedItemFromInventory;
         EventHandler.DropSelectedItemEvent += DropSelectedItemAtMousePosition;
     }
 
@@ -128,7 +131,7 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 item.ItemCode = itemDetails.itemCode;
 
                 // Remove item from players inventory
-                InventoryManager.Instance.RemoveItem(InventoryLocation.player, item.ItemCode, slotNumber);
+                InventoryManager.Instance.RemoveItem(InventoryLocation.player, item.ItemCode, SlotNumber);
 
                 // If no more of item then clear selected
                 if (InventoryManager.Instance.FindItemInInventory(InventoryLocation.player, item.ItemCode) == -1)
@@ -137,6 +140,23 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 }
             }
 
+        }
+    }
+
+    private void RemoveSelectedItemFromInventory()
+    {
+        if (itemDetails != null && isSelected)
+        {
+            int itemCode = itemDetails.itemCode;
+
+            // Remove item from players inventory
+            InventoryManager.Instance.RemoveItem(InventoryLocation.player, itemCode, SlotNumber);
+
+            // If no more of item then clear selected
+            if (InventoryManager.Instance.FindItemInInventory(InventoryLocation.player, itemCode) == -1)
+            {
+                ClearSelectedItem();
+            }
         }
     }
 
@@ -210,9 +230,6 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         // if left click
         if (eventData.button == PointerEventData.InputButton.Left)
         {
-            // Debug.Log(transform.GetSiblingIndex());
-
-
             // if inventory slot currently selected then deselect
             if (isSelected == true)
             {

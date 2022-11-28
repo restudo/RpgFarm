@@ -13,7 +13,7 @@ public static class Settings
     public static Vector2 cursorSize = Vector2.one;
 
     // Inventory
-    public static int playerInitialInventoryCapacity = 24;
+    public static int playerInitialInventoryCapacity = 12;
     public static int playerMaximumInventoryCapacity = 48;
 
     // chest inventory

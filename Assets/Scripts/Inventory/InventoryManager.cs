@@ -36,6 +36,14 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
 
     }
 
+    // private void Update()
+    // {
+    //     if (Input.GetKeyDown(KeyCode.P))
+    //     {
+    //         inventoryListCapacityIntArray[(int)InventoryLocation.player] += 1;
+    //     }
+    // }
+
     private void CreateInventoryLists()
     {
         inventoryLists = new List<InventoryItem>[(int)InventoryLocation.count];
