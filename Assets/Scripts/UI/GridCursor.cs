@@ -11,6 +11,7 @@ public class GridCursor : MonoBehaviour
     [SerializeField] private RectTransform cursorRectTransform = null;
     [SerializeField] private Sprite greenCursorSprite = null;
     [SerializeField] private Sprite redCursorSprite = null;
+    [SerializeField] private SO_CropDetailsList so_CropDetailsList = null;
 
     private bool _cursorPositionIsValid = false;
     public bool CursorPositionIsValid { get => _cursorPositionIsValid; set => _cursorPositionIsValid = value; }
@@ -127,6 +128,7 @@ public class GridCursor : MonoBehaviour
 
                 case ItemType.Watering_tool:
                 case ItemType.Hoeing_tool:
+                case ItemType.Collecting_tool:
                     if (!IsCursorValidForTool(gridPropertyDetails, itemDetails))
                     {
                         SetCursorToInvalid();
@@ -198,9 +200,10 @@ public class GridCursor : MonoBehaviour
         switch (itemDetails.itemType)
         {
             case ItemType.Hoeing_tool:
-                if (gridPropertyDetails.isDiggable == true)
+                if (gridPropertyDetails.isDiggable == true && gridPropertyDetails.daysSinceDug == -1)
                 {
                     #region Need to get any items at location so we can check if they are reapable
+
                     // Get world position for cursor
                     Vector3 cursorWorldPosition = new Vector3(GetWorldPositionForCursor().x + 0.5f, GetWorldPositionForCursor().y + 0.5f, 0f);
 
@@ -208,7 +211,8 @@ public class GridCursor : MonoBehaviour
                     List<Item> itemList = new List<Item>();
 
                     HelperMethods.GetComponentsAtBoxLocation<Item>(out itemList, cursorWorldPosition, Settings.cursorSize, 0f);
-                    #endregion
+
+                    #endregion Need to get any items at location so we can check if they are reapable
 
                     // Loop through items found to see if any are reapable type - we are not going to let the player dig where there are reapable scenary items
                     bool foundReapable = false;
@@ -245,6 +249,43 @@ public class GridCursor : MonoBehaviour
                 {
                     return false;
                 }
+
+
+            case ItemType.Collecting_tool:
+
+                // Check if item can be harvested with item selected, check item is fully grown
+
+                // Check if seed planted
+                if (gridPropertyDetails.seedItemCode != -1)
+                {
+                    // Get crop details for seed
+                    CropDetails cropDetails = so_CropDetailsList.GetCropDetails(gridPropertyDetails.seedItemCode);
+
+                    // if crop details found
+                    if (cropDetails != null)
+                    {
+                        // Check if crop fully grown
+                        if (gridPropertyDetails.growthDays >= cropDetails.totalGrowthDays)
+                        {
+                            // Check if crop can be harvested with tool selected
+                            if (cropDetails.CanUseToolToHarvestCrop(itemDetails.itemCode))
+                            {
+                                return true;
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                return false;
+
 
             default:
                 return false;

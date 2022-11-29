@@ -10,6 +10,7 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
     private Tilemap groundDecoration1;
     private Tilemap groundDecoration2;
     private Grid grid;
+    private Crop crop;
     private Dictionary<string, GridPropertyDetails> gridPropertyDictionary;
     [SerializeField] private SO_CropDetailsList so_CropDetailsList = null;
     [SerializeField] private SO_GridProperties[] so_gridPropertiesArray = null;
@@ -397,14 +398,19 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
             // get crop details
             CropDetails cropDetails = so_CropDetailsList.GetCropDetails(gridPropertyDetails.seedItemCode);
 
+            // crop is require water to grow
+            gridPropertyDetails.plantRequiresWater = cropDetails.plantRequiresWaterToGrow;
+
             // prefab to use
             GameObject cropPrefab;
 
             // instantiate crop prefab at grid location
             int growthStages = cropDetails.growthDays.Length;
 
+            // int wateredByDays = 0;
             int currentGrowthStage = 0;
             int daysCounter = cropDetails.totalGrowthDays;
+
             for (int i = growthStages - 1; i >= 0; i--)
             {
                 if (gridPropertyDetails.growthDays >= daysCounter)
@@ -414,6 +420,7 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
                 }
 
                 daysCounter = daysCounter - cropDetails.growthDays[i];
+
             }
 
             cropPrefab = cropDetails.growthPrefab[currentGrowthStage];
@@ -429,6 +436,24 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
             cropInstance.GetComponentInChildren<SpriteRenderer>().sprite = growthSprite;
             cropInstance.transform.SetParent(cropParentTransform);
             cropInstance.GetComponent<Crop>().cropGridPosition = new Vector2Int(gridPropertyDetails.gridX, gridPropertyDetails.gridY);
+
+            if (gridPropertyDetails.daysBetweenWatered >= cropDetails.itHaveToBeWateredBetweenXDays)
+            {
+                // Destroy crop when it does not watered between x days
+                if (gridPropertyDetails.growthDays < cropDetails.totalGrowthDays)
+                {
+                    Crop crop = GetCropObjectAtGridLocation(GetGridPropertyDetails(gridPropertyDetails.gridX, gridPropertyDetails.gridY));
+
+                    // Delete crop from grid properties
+                    gridPropertyDetails.seedItemCode = -1;
+                    gridPropertyDetails.growthDays = -1;
+                    gridPropertyDetails.daysSinceLastHarvest = -1;
+                    gridPropertyDetails.daysSinceWatered = -1;
+                    gridPropertyDetails.daysBetweenWatered = -1;
+
+                    Destroy(crop.gameObject);
+                }
+            }
         }
     }
 
@@ -544,6 +569,38 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
     }
 
     /// <summary>
+    ///  Returns the Crop object at the gridX, gridY position or null if no crop was found
+    /// </summary>
+    public Crop GetCropObjectAtGridLocation(GridPropertyDetails gridPropertyDetails)
+    {
+        Vector3 worldPosition = grid.GetCellCenterWorld(new Vector3Int(gridPropertyDetails.gridX, gridPropertyDetails.gridY, 0));
+        Collider2D[] collider2DArray = Physics2D.OverlapPointAll(worldPosition);
+
+        // Loop through colliders to get crop game object
+        Crop crop = null;
+
+        for (int i = 0; i < collider2DArray.Length; i++)
+        {
+            crop = collider2DArray[i].gameObject.GetComponentInParent<Crop>();
+            if (crop != null && crop.cropGridPosition == new Vector2Int(gridPropertyDetails.gridX, gridPropertyDetails.gridY))
+                break;
+            crop = collider2DArray[i].gameObject.GetComponentInChildren<Crop>();
+            if (crop != null && crop.cropGridPosition == new Vector2Int(gridPropertyDetails.gridX, gridPropertyDetails.gridY))
+                break;
+        }
+
+        return crop;
+    }
+
+    /// <summary>
+    /// Returns Crop Details for the provided seedItemCode
+    /// </summary>
+    public CropDetails GetCropDetails(int seedItemCode)
+    {
+        return so_CropDetailsList.GetCropDetails(seedItemCode);
+    }
+
+    /// <summary>
     /// Get the grid property details for the tile at (gridX,gridY).  If no grid property details exist null is returned and can assume that all grid property details values are null or false
     /// </summary>
     public GridPropertyDetails GetGridPropertyDetails(int gridX, int gridY)
@@ -643,16 +700,31 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
 
                         #region Update all grid properties to reflect the advance in the day
 
-                        // If a crop is planted
+                        // If a crop is planted, increase growthdays
                         if (gridPropertyDetails.growthDays > -1)
                         {
-                            gridPropertyDetails.growthDays += 1;
+                            if (gridPropertyDetails.plantRequiresWater == false)
+                            {
+                                gridPropertyDetails.growthDays += 1;
+                            }
+
+                            else if (gridPropertyDetails.plantRequiresWater == true && gridPropertyDetails.daysSinceWatered > -1)
+                            {
+                                gridPropertyDetails.growthDays += 1;
+                            }
+
+                            else if (gridPropertyDetails.daysSinceWatered == -1)
+                            {
+                                gridPropertyDetails.daysBetweenWatered += 1;
+                            }
+
                         }
 
                         // If ground is watered, then clear water
                         if (gridPropertyDetails.daysSinceWatered > -1)
                         {
                             gridPropertyDetails.daysSinceWatered = -1;
+                            gridPropertyDetails.daysBetweenWatered = -1;
                         }
 
                         // Set gridpropertydetails

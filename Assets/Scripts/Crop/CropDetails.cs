@@ -7,6 +7,7 @@ public class CropDetails
     public int seedItemCode;  // this is the item code for the corresponding seed
     public int[] growthDays; // days growth for each stage
     public int totalGrowthDays; // total growth days
+    public int itHaveToBeWateredBetweenXDays;
     public GameObject[] growthPrefab;// prefab to use when instantiating growth stages
     public Sprite[] growthSprite; // growth sprite
     public Season[] seasons; // growth seasons
@@ -18,6 +19,7 @@ public class CropDetails
     public bool isHarvestedAnimation; // true if harvested animation to be played on final growth stage prefab
     public bool isHarvestActionEffect = false; // flag to determine whether there is a harvest action effect
     public bool spawnCropProducedAtPlayerPosition;
+    public bool plantRequiresWaterToGrow;
     // public HarvestActionEffect harvestActionEffect; // the harvest action effect for the crop
 
     [ItemCodeDescription]
