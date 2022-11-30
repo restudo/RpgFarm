@@ -265,7 +265,7 @@ public class GridCursor : MonoBehaviour
                     if (cropDetails != null)
                     {
                         // Check if crop fully grown
-                        if (gridPropertyDetails.growthDays >= cropDetails.totalGrowthDays)
+                        if (gridPropertyDetails.growthDays >= cropDetails.growthDays[cropDetails.growthDays.Length - 1])
                         {
                             // Check if crop can be harvested with tool selected
                             if (cropDetails.CanUseToolToHarvestCrop(itemDetails.itemCode))

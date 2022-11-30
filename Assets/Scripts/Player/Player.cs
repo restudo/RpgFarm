@@ -16,6 +16,9 @@ public class Player : SingletonMonobehaviour<Player>
 
     private GridCursor gridCursor;
 
+    // picking condition for harvest with basket
+    private bool isPickingRight = false;
+
     private bool facingRight;
     private Animator anim;
     private Rigidbody2D rb;
@@ -185,14 +188,6 @@ public class Player : SingletonMonobehaviour<Player>
         {
             return Vector3Int.right;
         }
-        else if (cursorGridPosition.x < playerGridPosition.x)
-        {
-            return Vector3Int.left;
-        }
-        else if (cursorGridPosition.y > playerGridPosition.y)
-        {
-            return Vector3Int.right;
-        }
         else
         {
             return Vector3Int.left;
@@ -213,15 +208,20 @@ public class Player : SingletonMonobehaviour<Player>
 
     private void PlantSeedAtCursor(GridPropertyDetails gridPropertyDetails, ItemDetails itemDetails)
     {
-        // Update grid properties with seed details
-        gridPropertyDetails.seedItemCode = itemDetails.itemCode;
-        gridPropertyDetails.growthDays = 0;
+        // Process if we have cropdetails for the seed
+        if (GridPropertiesManager.Instance.GetCropDetails(itemDetails.itemCode) != null)
+        {
+            // Update grid properties with seed details
+            gridPropertyDetails.seedItemCode = itemDetails.itemCode;
+            gridPropertyDetails.growthDays = 0;
 
-        // Display planted crop at grid property details
-        GridPropertiesManager.Instance.DisplayPlantedCrop(gridPropertyDetails);
+            // Display planted crop at grid property details
+            GridPropertiesManager.Instance.DisplayPlantedCrop(gridPropertyDetails);
 
-        // Remove item from inventory
-        EventHandler.CallRemoveSelectedItemFromInventoryEvent();
+            // Remove item from inventory
+            EventHandler.CallRemoveSelectedItemFromInventoryEvent();
+
+        }
 
     }
 
@@ -418,6 +418,8 @@ public class Player : SingletonMonobehaviour<Player>
 
                 if (playerDirection == Vector3Int.right)
                 {
+                    isPickingRight = true;
+
                     if (!facingRight)
                     {
                         Flip();
@@ -447,7 +449,7 @@ public class Player : SingletonMonobehaviour<Player>
             switch (equippedItemDetails.itemType)
             {
                 case ItemType.Collecting_tool:
-                    crop.ProcessToolAction(equippedItemDetails);
+                    crop.ProcessToolAction(equippedItemDetails, isPickingRight);
                     break;
             }
         }

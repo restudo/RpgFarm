@@ -398,60 +398,59 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
             // get crop details
             CropDetails cropDetails = so_CropDetailsList.GetCropDetails(gridPropertyDetails.seedItemCode);
 
-            // crop is require water to grow
-            gridPropertyDetails.plantRequiresWater = cropDetails.plantRequiresWaterToGrow;
-
-            // prefab to use
-            GameObject cropPrefab;
-
-            // instantiate crop prefab at grid location
-            int growthStages = cropDetails.growthDays.Length;
-
-            // int wateredByDays = 0;
-            int currentGrowthStage = 0;
-            int daysCounter = cropDetails.totalGrowthDays;
-
-            for (int i = growthStages - 1; i >= 0; i--)
+            if (cropDetails != null)
             {
-                if (gridPropertyDetails.growthDays >= daysCounter)
+                // crop is require water to grow
+                gridPropertyDetails.plantRequiresWater = cropDetails.plantRequiresWaterToGrow;
+
+                // prefab to use
+                GameObject cropPrefab;
+
+                // instantiate crop prefab at grid location
+                int growthStages = cropDetails.growthDays.Length;
+
+                // int wateredByDays = 0;
+                int currentGrowthStage = 0;
+
+                for (int i = growthStages - 1; i >= 0; i--)
                 {
-                    currentGrowthStage = i;
-                    break;
+                    if (gridPropertyDetails.growthDays >= cropDetails.growthDays[i])
+                    {
+                        currentGrowthStage = i;
+                        break;
+                    }
                 }
 
-                daysCounter = daysCounter - cropDetails.growthDays[i];
+                cropPrefab = cropDetails.growthPrefab[currentGrowthStage];
 
-            }
+                Sprite growthSprite = cropDetails.growthSprite[currentGrowthStage];
 
-            cropPrefab = cropDetails.growthPrefab[currentGrowthStage];
+                Vector3 worldPosition = groundDecoration2.CellToWorld(new Vector3Int(gridPropertyDetails.gridX, gridPropertyDetails.gridY, 0));
 
-            Sprite growthSprite = cropDetails.growthSprite[currentGrowthStage];
+                worldPosition = new Vector3(worldPosition.x + Settings.gridCellSize / 2, worldPosition.y, worldPosition.z);
 
-            Vector3 worldPosition = groundDecoration2.CellToWorld(new Vector3Int(gridPropertyDetails.gridX, gridPropertyDetails.gridY, 0));
+                GameObject cropInstance = Instantiate(cropPrefab, worldPosition, Quaternion.identity);
 
-            worldPosition = new Vector3(worldPosition.x + Settings.gridCellSize / 2, worldPosition.y, worldPosition.z);
+                cropInstance.GetComponentInChildren<SpriteRenderer>().sprite = growthSprite;
+                cropInstance.transform.SetParent(cropParentTransform);
+                cropInstance.GetComponent<Crop>().cropGridPosition = new Vector2Int(gridPropertyDetails.gridX, gridPropertyDetails.gridY);
 
-            GameObject cropInstance = Instantiate(cropPrefab, worldPosition, Quaternion.identity);
-
-            cropInstance.GetComponentInChildren<SpriteRenderer>().sprite = growthSprite;
-            cropInstance.transform.SetParent(cropParentTransform);
-            cropInstance.GetComponent<Crop>().cropGridPosition = new Vector2Int(gridPropertyDetails.gridX, gridPropertyDetails.gridY);
-
-            if (gridPropertyDetails.daysBetweenWatered >= cropDetails.itHaveToBeWateredBetweenXDays)
-            {
-                // Destroy crop when it does not watered between x days
-                if (gridPropertyDetails.growthDays < cropDetails.totalGrowthDays)
+                if (gridPropertyDetails.daysBetweenWatered >= cropDetails.itHaveToBeWateredBetweenXDays)
                 {
-                    Crop crop = GetCropObjectAtGridLocation(GetGridPropertyDetails(gridPropertyDetails.gridX, gridPropertyDetails.gridY));
+                    // Destroy crop when it does not watered between x days
+                    if (gridPropertyDetails.growthDays < cropDetails.growthDays[cropDetails.growthDays.Length - 1])
+                    {
+                        Crop crop = GetCropObjectAtGridLocation(GetGridPropertyDetails(gridPropertyDetails.gridX, gridPropertyDetails.gridY));
 
-                    // Delete crop from grid properties
-                    gridPropertyDetails.seedItemCode = -1;
-                    gridPropertyDetails.growthDays = -1;
-                    gridPropertyDetails.daysSinceLastHarvest = -1;
-                    gridPropertyDetails.daysSinceWatered = -1;
-                    gridPropertyDetails.daysBetweenWatered = -1;
+                        // Delete crop from grid properties
+                        gridPropertyDetails.seedItemCode = -1;
+                        gridPropertyDetails.growthDays = -1;
+                        gridPropertyDetails.daysSinceLastHarvest = -1;
+                        gridPropertyDetails.daysSinceWatered = -1;
+                        gridPropertyDetails.daysBetweenWatered = -1;
 
-                    Destroy(crop.gameObject);
+                        Destroy(crop.gameObject);
+                    }
                 }
             }
         }
