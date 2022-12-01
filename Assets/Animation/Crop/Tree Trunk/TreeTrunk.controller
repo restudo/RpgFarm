@@ -336,7 +336,7 @@ AnimatorStateTransition:
   m_CanTransitionToSelf: 1
 --- !u!1102 &1102400822357388834
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -366,7 +366,7 @@ AnimatorState:
   m_TimeParameter: 
 --- !u!1102 &1102517161352450976
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -393,7 +393,7 @@ AnimatorState:
   m_TimeParameter: 
 --- !u!1102 &1102606114111552780
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -420,7 +420,7 @@ AnimatorState:
   m_TimeParameter: 
 --- !u!1102 &1102913729422644332
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -446,7 +446,7 @@ AnimatorState:
   m_TimeParameter: 
 --- !u!1102 &1102918235173881646
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -473,12 +473,12 @@ AnimatorState:
   m_TimeParameter: 
 --- !u!1102 &1102919039818857894
 AnimatorState:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TreeTrunkFallingRight
+  m_Name: TreeTrunkVanishingRight
   m_Speed: 1
   m_CycleOffset: 0
   m_Transitions:
@@ -500,7 +500,7 @@ AnimatorState:
   m_TimeParameter: 
 --- !u!1107 &1107794290299505402
 AnimatorStateMachine:
-  serializedVersion: 5
+  serializedVersion: 6
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
