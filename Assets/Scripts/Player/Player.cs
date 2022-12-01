@@ -17,6 +17,7 @@ public class Player : SingletonMonobehaviour<Player>
     private GridCursor gridCursor;
 
     // picking condition for harvest with basket
+    private bool isUsingToolRight = false;
     private bool isPickingRight = false;
 
     private bool facingRight;
@@ -164,9 +165,10 @@ public class Player : SingletonMonobehaviour<Player>
                     }
                     break;
 
-                case ItemType.Collecting_tool:
-                case ItemType.Watering_tool:
                 case ItemType.Hoeing_tool:
+                case ItemType.Watering_tool:
+                case ItemType.Chopping_tool:
+                case ItemType.Collecting_tool:
                     ProcessPlayerClickInputTool(gridPropertyDetails, itemDetails, playerDirection);
                     break;
 
@@ -249,6 +251,13 @@ public class Player : SingletonMonobehaviour<Player>
                 if (gridCursor.CursorPositionIsValid)
                 {
                     WaterGroundAtCursor(gridPropertyDetails, playerDirection);
+                }
+                break;
+
+            case ItemType.Chopping_tool:
+                if (gridCursor.CursorPositionIsValid)
+                {
+                    ChopInPlayerDirection(gridPropertyDetails, itemDetails, playerDirection);
                 }
                 break;
 
@@ -381,6 +390,36 @@ public class Player : SingletonMonobehaviour<Player>
         playerToolUseDisabled = false;
     }
 
+    private void ChopInPlayerDirection(GridPropertyDetails gridPropertyDetails, ItemDetails equippedItemDetails, Vector3Int playerDirection)
+    {
+        // Trigger animation
+        StartCoroutine(ChopInPlayerDirectionRoutine(gridPropertyDetails, equippedItemDetails, playerDirection));
+    }
+
+    private IEnumerator ChopInPlayerDirectionRoutine(GridPropertyDetails gridPropertyDetails, ItemDetails equippedItemDetails, Vector3Int playerDirection)
+    {
+        playerInputIsDisabled = true;
+        playerToolUseDisabled = true;
+
+        // Set tool animation to axe in override animation
+        // toolCharacterAttribute.partVariantType = PartVariantType.axe;
+        // characterAttributeCustomisationList.Clear();
+        // characterAttributeCustomisationList.Add(toolCharacterAttribute);
+        // animationOverrides.ApplyCharacterCustomisationParameters(characterAttributeCustomisationList);
+
+        ProcessCropWithEquippedItemInPlayerDirection(playerDirection, equippedItemDetails, gridPropertyDetails);
+
+        yield return useToolAnimationPause;
+
+        // After animation pause
+        yield return afterUseToolAnimationPause;
+
+        anim.SetBool(isUsingHoe, false);
+
+        playerInputIsDisabled = false;
+        playerToolUseDisabled = false;
+    }
+
     private void CollectInPlayerDirection(GridPropertyDetails gridPropertyDetails, ItemDetails equippedItemDetails, Vector3Int playerDirection)
     {
 
@@ -413,9 +452,30 @@ public class Player : SingletonMonobehaviour<Player>
     {
         switch (equippedItemDetails.itemType)
         {
+            case ItemType.Chopping_tool:
+                if (playerDirection == Vector3Int.right)
+                {
+                    isUsingToolRight = true;
+
+                    if (!facingRight)
+                    {
+                        Flip();
+                    }
+                    anim.SetBool(isUsingHoe, true);
+                }
+                else if (playerDirection == Vector3Int.left)
+                {
+                    isUsingToolRight = false;
+
+                    if (facingRight)
+                    {
+                        Flip();
+                    }
+                    anim.SetBool(isUsingHoe, true);
+                }
+                break;
 
             case ItemType.Collecting_tool:
-
                 if (playerDirection == Vector3Int.right)
                 {
                     isPickingRight = true;
@@ -428,6 +488,8 @@ public class Player : SingletonMonobehaviour<Player>
                 }
                 else if (playerDirection == Vector3Int.left)
                 {
+                    isPickingRight = false;
+
                     if (facingRight)
                     {
                         Flip();
@@ -448,6 +510,10 @@ public class Player : SingletonMonobehaviour<Player>
         {
             switch (equippedItemDetails.itemType)
             {
+                case ItemType.Chopping_tool:
+                    crop.ProcessToolAction(equippedItemDetails, isUsingToolRight);
+                    break;
+
                 case ItemType.Collecting_tool:
                     crop.ProcessToolAction(equippedItemDetails, isPickingRight);
                     break;

@@ -38,7 +38,7 @@ public class Crop : MonoBehaviour
             {
                 animator.SetTrigger("usetoolright");
             }
-            else
+            else if (!isToolRight)
             {
                 animator.SetTrigger("usetoolleft");
             }
@@ -76,7 +76,7 @@ public class Crop : MonoBehaviour
             {
                 animator.SetTrigger("harvestright");
             }
-            else
+            else if (!isUsingToolRight)
             {
                 animator.SetTrigger("harvestleft");
             }
