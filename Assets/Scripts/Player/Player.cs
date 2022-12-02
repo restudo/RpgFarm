@@ -44,6 +44,19 @@ public class Player : SingletonMonobehaviour<Player>
         base.Awake();
     }
 
+    private void OnDisable()
+    {
+        EventHandler.BeforeSceneUnloadFadeOutEvent -= DisablePlayerInputAndResetMovement;
+        EventHandler.AfterSceneLoadFadeInEvent -= EnablePlayerInput;
+    }
+
+
+    private void OnEnable()
+    {
+        EventHandler.BeforeSceneUnloadFadeOutEvent += DisablePlayerInputAndResetMovement;
+        EventHandler.AfterSceneLoadFadeInEvent += EnablePlayerInput;
+    }
+
     void Start()
     {
         facingRight = true;
@@ -622,7 +635,7 @@ public class Player : SingletonMonobehaviour<Player>
                         Vector3 effectPosition = new Vector3(itemArray[i].transform.position.x, itemArray[i].transform.position.y + Settings.gridCellSize / 2f, itemArray[i].transform.position.z);
 
                         // Trigger reaping effect
-                        // EventHandler.CallHarvestActionEffectEvent(effectPosition, HarvestActionEffect.reaping);
+                        EventHandler.CallHarvestActionEffectEvent(effectPosition, HarvestActionEffect.reaping);
 
                         Destroy(itemArray[i].gameObject);
 
@@ -730,13 +743,6 @@ public class Player : SingletonMonobehaviour<Player>
         {
             TimeManager.Instance.TestAdvanceGameDay();
         }
-
-        // Test scene unload / load
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            SceneControllerManager.Instance.FadeAndLoadScene(SceneName.Scene1_Farm.ToString(), transform.position);
-        }
-
     }
 
     public void DisablePlayerInputAndResetMovement()

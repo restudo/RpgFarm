@@ -76,6 +76,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ccf8474b53cdb844d9919aa9361aafd3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  harvestActionEffectTransform: {fileID: 1817798433106813589}
   cropHarvestedSpriteRenderer: {fileID: 1166282987823233037}
   cropGridPosition: {x: 0, y: 0}
 --- !u!1 &1761655469875115759
