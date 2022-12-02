@@ -142,8 +142,7 @@ MonoBehaviour:
   - itemCode: 10010
     itemType: 0
     itemDescription: Canyon Oak Tree Stump
-    itemSprite: {fileID: 7154603021615155856, guid: d241c496741a12d4290e12ba81dd6724,
-      type: 3}
+    itemSprite: {fileID: 7154603021615155856, guid: d241c496741a12d4290e12ba81dd6724, type: 3}
     itemLongDescription: 
     itemUseGridRadius: 0
     itemUseRadius: 0
@@ -155,8 +154,7 @@ MonoBehaviour:
   - itemCode: 10011
     itemType: 0
     itemDescription: Blue Spruce Tree Stump
-    itemSprite: {fileID: -341119608263849502, guid: 5d22327a2a3d2a049a8a59a708d527fe,
-      type: 3}
+    itemSprite: {fileID: -341119608263849502, guid: 5d22327a2a3d2a049a8a59a708d527fe, type: 3}
     itemLongDescription: The stump of a spruce tree
     itemUseGridRadius: 0
     itemUseRadius: 0

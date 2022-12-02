@@ -8,6 +8,10 @@ public static class Settings
     public const float fadeOutSeconds = 0.35f;
     public const float targetAlpha = 0.45f;
 
+    // Reaping
+    public const int maxCollidersToTestPerReapSwing = 15;
+    public const int maxTargetComponentsToDestroyPerReapSwing = 2;
+
     // Tilemap
     public const float gridCellSize = 1f; // grid cell size in unity units
     public static Vector2 cursorSize = Vector2.one;
@@ -20,6 +24,7 @@ public static class Settings
     public static int ChestInitialInventoryCapacity = 12;
 
     // player
+    public static float playerCentreYOffset = 0.875f;
     public static float useToolAnimationPause = 0.25f;
     public static float afterUseToolAnimationPause = 0.2f;
     public static float liftToolAnimationPause = 0.4f;

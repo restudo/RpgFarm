@@ -130,6 +130,8 @@ public class GridCursor : MonoBehaviour
                 case ItemType.Watering_tool:
                 case ItemType.Chopping_tool:
                 case ItemType.Collecting_tool:
+                case ItemType.Breaking_tool:
+                case ItemType.Reaping_tool:
                     if (!IsCursorValidForTool(gridPropertyDetails, itemDetails))
                     {
                         SetCursorToInvalid();
@@ -253,7 +255,7 @@ public class GridCursor : MonoBehaviour
 
             case ItemType.Chopping_tool:
             case ItemType.Collecting_tool:
-
+            case ItemType.Breaking_tool:
                 // Check if item can be harvested with item selected, check item is fully grown
 
                 // Check if seed planted
