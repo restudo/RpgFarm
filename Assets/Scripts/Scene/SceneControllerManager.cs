@@ -55,7 +55,6 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
         SaveLoadManager.Instance.StoreCurrentSceneData();
 
         // Set player position
-
         Player.Instance.gameObject.transform.position = spawnPosition;
 
         //  Call before scene unload event.

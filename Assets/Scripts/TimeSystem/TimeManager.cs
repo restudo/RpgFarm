@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class TimeManager : SingletonMonobehaviour<TimeManager>
 {
-
     private int gameYear = 1;
     private Season gameSeason = Season.Kemarau;
     private int gameDay = 1;
+    public int GameDay { get => gameDay; set => gameDay = value; }
     private int gameDayUnreset = 1;
     private int gameHour = 6;
+    public int GameHour { get => gameHour; set => gameHour = value; }
     private int gameMinute = 30;
     private int gameSecond = 0;
     private string gameDayOfWeek = "Senin";
@@ -51,7 +52,6 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>
         {
             gameSecond = 0;
             gameMinute++;
-
 
             if (gameMinute > 59)
             {
@@ -151,12 +151,32 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>
 
     //TODO:Remove
     /// <summary>
-    /// Advance 1 day
+    /// Advance Penalty Day
     /// </summary>
-    public void TestAdvanceGameDay()
+    public void TestAdvancePenaltyGameDay()
     {
         for (int i = 0; i < 86400; i++)
         {
+            if (gameHour == 11 && gameMinute >= 59)
+            {
+                break;
+            }
+            UpdateGameSecond();
+        }
+    }
+
+    //TODO:Remove
+    /// <summary>
+    /// Advance Normal Day
+    /// </summary>
+    public void TestAdvanceNormalGameDay()
+    {
+        for (int i = 0; i < 86400; i++)
+        {
+            if (gameHour == 5 && gameMinute >= 59)
+            {
+                break;
+            }
             UpdateGameSecond();
         }
     }

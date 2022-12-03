@@ -32,6 +32,11 @@ public static class Settings
     public static float pickAnimationPause = 1f;
     public static float afterPickAnimationPause = 0.2f;
 
+    public static int playerInitialDefaultStamina = 100;
+    public static int playerMaxDefaultStamina = 150;
+    public static int playerInitialPenaltyStamina = 50;
+    public static int playerMaxPenaltyStamina = 70;
+
     // Player Animation Parameters
     public static int xInput;
     public static int yInput;

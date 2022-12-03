@@ -31,27 +31,35 @@ public class CropInstantiator : MonoBehaviour
         grid = GameObject.FindObjectOfType<Grid>();
 
         // Get grid position for crop
-        Vector3Int cropGridPosition = grid.WorldToCell(transform.position);
+        Vector3Int cropPosition = new Vector3Int(Random.Range(-20, 20), Random.Range(-30, 30), 0);
 
         // Set Crop Grid Properties
-        SetCropGridProperties(cropGridPosition);
+        SetCropGridProperties(cropPosition);
 
         // Destroy this gameobject
         Destroy(gameObject);
     }
 
 
-    private void SetCropGridProperties(Vector3Int cropGridPosition)
+    private void SetCropGridProperties(Vector3Int cropPosition)
     {
         if (seedItemCode > 0)
         {
             GridPropertyDetails gridPropertyDetails;
 
-            gridPropertyDetails = GridPropertiesManager.Instance.GetGridPropertyDetails(cropGridPosition.x, cropGridPosition.y);
+            gridPropertyDetails = GridPropertiesManager.Instance.GetGridPropertyDetails(cropPosition.x, cropPosition.y);
 
             if (gridPropertyDetails == null)
             {
                 gridPropertyDetails = new GridPropertyDetails();
+            }
+
+            if (gridPropertyDetails.daysSinceDug > -1 || gridPropertyDetails.canPlaceFurniture)
+            {
+                Debug.Log("Pindah");
+
+                cropPosition = new Vector3Int(Random.Range(-20, 20), Random.Range(-30, 30), 0);
+                gridPropertyDetails = GridPropertiesManager.Instance.GetGridPropertyDetails(cropPosition.x, cropPosition.y);
             }
 
             gridPropertyDetails.daysSinceDug = daysSinceDug;
@@ -59,7 +67,7 @@ public class CropInstantiator : MonoBehaviour
             gridPropertyDetails.seedItemCode = seedItemCode;
             gridPropertyDetails.growthDays = growthDays;
 
-            GridPropertiesManager.Instance.SetGridPropertyDetails(cropGridPosition.x, cropGridPosition.y, gridPropertyDetails);
+            GridPropertiesManager.Instance.SetGridPropertyDetails(cropPosition.x, cropPosition.y, gridPropertyDetails);
 
         }
     }

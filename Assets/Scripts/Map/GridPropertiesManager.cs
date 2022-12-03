@@ -658,9 +658,12 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
             if (isFirstTimeSceneLoaded == true)
             {
                 isFirstTimeSceneLoaded = false;
+                return;
             }
-
-
+            else if (TimeManager.Instance.GameDay == 10 || TimeManager.Instance.GameDay == 20 || TimeManager.Instance.GameDay == 30)
+            {
+                isFirstTimeSceneLoaded = true;
+            }
         }
     }
 

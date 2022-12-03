@@ -7,4 +7,6 @@
     public const string GroundDecoration2 = "GroundDecoration2";
 
     public const string ItemsParentTransform = "ItemsParentTransform";
+
+    public const string Bed = "Bed";
 }

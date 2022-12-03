@@ -21,6 +21,7 @@ public class Player : SingletonMonobehaviour<Player>
     private bool isUsingToolRight = false;
     private bool isPickingRight = false;
 
+    private bool playerIsOnTheBed = false;
     private bool facingRight;
     private Animator anim;
     private Rigidbody2D rb;
@@ -38,6 +39,12 @@ public class Player : SingletonMonobehaviour<Player>
 
     [Header("MoveController")]
     [SerializeField] private float moveSpeed;
+
+    [Header("Stamina")]
+    [SerializeField] private int _stamina = 100;
+    public int Stamina { get => _stamina; set => _stamina = value; }
+    private int defaultStamina;
+    public int DefaultStamina { get => defaultStamina; set => defaultStamina = value; }
 
     protected override void Awake()
     {
@@ -60,6 +67,7 @@ public class Player : SingletonMonobehaviour<Player>
     void Start()
     {
         facingRight = true;
+        defaultStamina = Stamina;
         mainCamera = Camera.main;
 
         isWalking = Animator.StringToHash("isWalking");
@@ -148,6 +156,30 @@ public class Player : SingletonMonobehaviour<Player>
                     ProcessPlayerClickInput(cursorGridPosition, playerGridPosition);
                 }
             }
+        }
+
+        // Trigger sleep
+        if (playerIsOnTheBed && Input.GetKeyDown(KeyCode.E))
+        {
+            if (TimeManager.Instance.GameHour >= 0 && TimeManager.Instance.GameHour <= 4)
+            {
+                // set Default stamina to 70 because of penalty
+                DefaultStamina = Settings.playerMaxPenaltyStamina;
+                // set stamina to 50 because of penalty
+                Stamina = Settings.playerInitialPenaltyStamina;
+
+                TimeManager.Instance.TestAdvancePenaltyGameDay();
+            }
+            else
+            {
+                // set stamina back to default
+                DefaultStamina = Settings.playerInitialDefaultStamina;
+                Stamina = DefaultStamina;
+
+                TimeManager.Instance.TestAdvanceNormalGameDay();
+            }
+
+            playerIsOnTheBed = false;
         }
     }
 
@@ -282,6 +314,9 @@ public class Player : SingletonMonobehaviour<Player>
         // Process if we have cropdetails for the seed
         if (GridPropertiesManager.Instance.GetCropDetails(itemDetails.itemCode) != null)
         {
+            // Decrease the stamina
+            Stamina -= 2;
+
             // Update grid properties with seed details
             gridPropertyDetails.seedItemCode = itemDetails.itemCode;
             gridPropertyDetails.growthDays = 0;
@@ -312,6 +347,9 @@ public class Player : SingletonMonobehaviour<Player>
             case ItemType.Hoeing_tool:
                 if (gridCursor.CursorPositionIsValid)
                 {
+                    // Decrease the stamina
+                    Stamina -= 2;
+
                     HoeGroundAtCursor(gridPropertyDetails, playerDirection);
                 }
                 break;
@@ -319,6 +357,9 @@ public class Player : SingletonMonobehaviour<Player>
             case ItemType.Watering_tool:
                 if (gridCursor.CursorPositionIsValid)
                 {
+                    // Decrease the stamina
+                    Stamina -= 1;
+
                     WaterGroundAtCursor(gridPropertyDetails, playerDirection);
                 }
                 break;
@@ -326,6 +367,9 @@ public class Player : SingletonMonobehaviour<Player>
             case ItemType.Chopping_tool:
                 if (gridCursor.CursorPositionIsValid)
                 {
+                    // Decrease the stamina
+                    Stamina -= 2;
+
                     ChopInPlayerDirection(gridPropertyDetails, itemDetails, playerDirection);
                 }
                 break;
@@ -340,6 +384,9 @@ public class Player : SingletonMonobehaviour<Player>
             case ItemType.Breaking_tool:
                 if (gridCursor.CursorPositionIsValid)
                 {
+                    // Decrease the stamina
+                    Stamina -= 2;
+
                     BreakInPlayerDirection(gridPropertyDetails, itemDetails, playerDirection);
                 }
                 break;
@@ -347,6 +394,9 @@ public class Player : SingletonMonobehaviour<Player>
             case ItemType.Reaping_tool:
                 if (cursor.CursorPositionIsValid)
                 {
+                    // Decrease the stamina
+                    Stamina -= 1;
+
                     playerDirection = GetPlayerDirection(cursor.GetWorldPositionForCursor(), GetPlayerCentrePosition());
                     ReapInPlayerDirectionAtCursor(itemDetails, playerDirection);
                 }
@@ -741,7 +791,66 @@ public class Player : SingletonMonobehaviour<Player>
         // Trigger Advance Day
         if (Input.GetKeyDown(KeyCode.G))
         {
-            TimeManager.Instance.TestAdvanceGameDay();
+            if (TimeManager.Instance.GameHour >= 0 && TimeManager.Instance.GameHour <= 4)
+            {
+                // set Default stamina to 70 because of penalty
+                DefaultStamina = Settings.playerMaxPenaltyStamina;
+                // set stamina to 50 because of penalty
+                Stamina = Settings.playerInitialPenaltyStamina;
+
+                TimeManager.Instance.TestAdvancePenaltyGameDay();
+            }
+            else
+            {
+                // set stamina back to default
+                DefaultStamina = Settings.playerInitialDefaultStamina;
+                Stamina = DefaultStamina;
+
+                TimeManager.Instance.TestAdvanceNormalGameDay();
+            }
+
+        }
+
+        // Debug test for stamina
+        if (Input.GetKeyDown(KeyCode.Y))
+        {
+            Stamina += 20;
+            if (Stamina >= defaultStamina)
+            {
+                Stamina = defaultStamina;
+            }
+            Debug.Log("Makan kentang, singkong, tomat, labu " + Stamina);
+        }
+        if (Input.GetKeyDown(KeyCode.U))
+        {
+            Stamina += 40;
+            if (Stamina >= defaultStamina)
+            {
+                Stamina = defaultStamina;
+            }
+            Debug.Log("Makan Tanaman Herbal " + Stamina);
+        }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            Stamina += 25;
+            if (Stamina >= defaultStamina)
+            {
+                Stamina = defaultStamina;
+            }
+            Debug.Log("Makan Jahe " + Stamina);
+        }
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            if (defaultStamina < Settings.playerMaxDefaultStamina)
+            {
+                DefaultStamina += 2;
+            }
+            Debug.Log("Makan Tanaman Herbal, default stamina bertambah" + defaultStamina + ", namun stamina tidak" + Stamina);
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            Debug.Log(Stamina);
+            Debug.Log("Default Stamina " + defaultStamina);
         }
     }
 
@@ -781,5 +890,18 @@ public class Player : SingletonMonobehaviour<Player>
     public Vector3 GetPlayerCentrePosition()
     {
         return new Vector3(transform.position.x, transform.position.y + Settings.playerCentreYOffset, transform.position.z);
+    }
+
+    void OnTriggerEnter2D(Collider2D collision)
+    {
+        switch (collision.gameObject.tag)
+        {
+            case Tags.Bed:
+                playerIsOnTheBed = true;
+                break;
+
+            default:
+                break;
+        }
     }
 }
