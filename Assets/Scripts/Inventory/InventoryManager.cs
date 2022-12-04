@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class InventoryManager : SingletonMonobehaviour<InventoryManager>
 {
+    private int sumItemInInventory = 0;
+
     private int maxStack = 3;
 
     private Dictionary<int, ItemDetails> itemDetailsDictionary;
@@ -36,13 +38,13 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
 
     }
 
-    // private void Update()
-    // {
-    //     if (Input.GetKeyDown(KeyCode.P))
-    //     {
-    //         inventoryListCapacityIntArray[(int)InventoryLocation.player] += 1;
-    //     }
-    // }
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            inventoryListCapacityIntArray[(int)InventoryLocation.player] += 1;
+        }
+    }
 
     private void CreateInventoryLists()
     {
@@ -82,8 +84,15 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
     /// </summary>
     public void AddItem(InventoryLocation inventoryLocation, Item item, GameObject gameObjectToDelete)
     {
-        AddItem(inventoryLocation, item);
-        Destroy(gameObjectToDelete);
+        if (sumItemInInventory < inventoryListCapacityIntArray[(int)InventoryLocation.player])
+        {
+            AddItem(inventoryLocation, item);
+            Destroy(gameObjectToDelete);
+        }
+        else
+        {
+            Debug.Log("Gabisa invennya penuh");
+        }
     }
 
     /// <summary>
@@ -144,6 +153,9 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
         inventoryItem.itemCode = itemCode;
         inventoryItem.itemQuantity = 1;
         inventoryList.Add(inventoryItem);
+
+        sumItemInInventory += 1;
+        Debug.Log(sumItemInInventory);
 
         //DebugPrintInventoryList(inventoryList);
     }
@@ -390,6 +402,8 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
         else
         {
             inventoryList.RemoveAt(position);
+            sumItemInInventory -= 1;
+            Debug.Log(sumItemInInventory);
         }
     }
 
