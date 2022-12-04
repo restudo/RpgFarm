@@ -54,10 +54,8 @@ public class CropInstantiator : MonoBehaviour
                 gridPropertyDetails = new GridPropertyDetails();
             }
 
-            if (gridPropertyDetails.daysSinceDug > -1 || gridPropertyDetails.canPlaceFurniture)
+            if (gridPropertyDetails.daysSinceDug > -1)
             {
-                Debug.Log("Pindah");
-
                 cropPosition = new Vector3Int(Random.Range(-20, 20), Random.Range(-30, 30), 0);
                 gridPropertyDetails = GridPropertiesManager.Instance.GetGridPropertyDetails(cropPosition.x, cropPosition.y);
             }

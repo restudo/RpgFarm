@@ -231,7 +231,22 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             {
                 if (itemDetails.canBeDropped)
                 {
-                    DropSelectedItemAtMousePosition();
+                    // Drop a single item
+                    if (Input.GetKey(KeyCode.LeftShift))
+                    {
+                        // Drop a full stack of items
+                        int stackSize = itemQuantity;
+
+                        // Store a temporary stackSize variable
+                        for (int i = 0; i < stackSize; i++)
+                        {
+                            DropSelectedItemAtMousePosition();
+                        }
+                    }
+                    else
+                    {
+                        DropSelectedItemAtMousePosition();
+                    }
                 }
             }
 

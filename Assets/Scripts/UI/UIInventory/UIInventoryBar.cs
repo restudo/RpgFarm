@@ -103,6 +103,13 @@ public class UIInventoryBar : MonoBehaviour
                             inventorySlot[i].textMeshProUGUI.text = inventoryList[i].itemQuantity.ToString();
                             inventorySlot[i].itemDetails = itemDetails;
                             inventorySlot[i].itemQuantity = inventoryList[i].itemQuantity;
+
+                            if (inventorySlot[i].itemQuantity <= 0)
+                            {
+                                // Debug.Log("Item position " + i);
+                                InventoryManager.Instance.RemoveItem(inventoryLocation, itemCode, i);
+                            }
+
                             SetHighlightedInventorySlots(i);
 
                         }

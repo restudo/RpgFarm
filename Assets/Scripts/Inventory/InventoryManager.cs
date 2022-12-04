@@ -177,11 +177,63 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
             InventoryItem fromInventoryItem = inventoryLists[(int)inventoryLocation][fromItem];
             InventoryItem toInventoryItem = inventoryLists[(int)inventoryLocation][toItem];
 
-            Debug.Log("From item qty : " + fromInventoryItem.itemQuantity);
-            Debug.Log("To item qty : " + toInventoryItem.itemQuantity);
+            if (inventoryLists[(int)inventoryLocation][fromItem].itemCode == inventoryLists[(int)inventoryLocation][toItem].itemCode)
+            {
+                // just swap it
+                if (inventoryLists[(int)inventoryLocation][fromItem].itemQuantity >= maxStack &&
+                    inventoryLists[(int)inventoryLocation][toItem].itemQuantity >= maxStack ||
+                    inventoryLists[(int)inventoryLocation][fromItem].itemQuantity >= maxStack &&
+                    inventoryLists[(int)inventoryLocation][toItem].itemQuantity <= maxStack ||
+                    inventoryLists[(int)inventoryLocation][fromItem].itemQuantity <= maxStack &&
+                    inventoryLists[(int)inventoryLocation][toItem].itemQuantity >= maxStack)
+                {
+                    inventoryLists[(int)inventoryLocation][toItem] = fromInventoryItem;
+                    inventoryLists[(int)inventoryLocation][fromItem] = toInventoryItem;
+                }
 
-            inventoryLists[(int)inventoryLocation][toItem] = fromInventoryItem;
-            inventoryLists[(int)inventoryLocation][fromItem] = toInventoryItem;
+                // combine when the itemcode is same
+                else if (inventoryLists[(int)inventoryLocation][fromItem].itemQuantity <= maxStack &&
+                    inventoryLists[(int)inventoryLocation][toItem].itemQuantity <= maxStack ||
+                    inventoryLists[(int)inventoryLocation][fromItem].itemQuantity < inventoryLists[(int)inventoryLocation][toItem].itemQuantity ||
+                    inventoryLists[(int)inventoryLocation][toItem].itemQuantity < inventoryLists[(int)inventoryLocation][fromItem].itemQuantity)
+                {
+                    int beforeSwapToInventory = toInventoryItem.itemQuantity;
+                    int beforeSwapFromInventory = fromInventoryItem.itemQuantity;
+
+                    toInventoryItem.itemQuantity += fromInventoryItem.itemQuantity;
+                    fromInventoryItem.itemQuantity -= toInventoryItem.itemQuantity;
+
+                    if (toInventoryItem.itemQuantity > maxStack)
+                    {
+                        for (int i = toInventoryItem.itemQuantity; i > maxStack; i--)
+                        {
+                            toInventoryItem.itemQuantity -= 1;
+                        }
+                    }
+
+                    if (fromInventoryItem.itemQuantity <= 0)
+                    {
+                        if (beforeSwapToInventory + beforeSwapFromInventory <= maxStack)
+                        {
+                            for (int i = fromInventoryItem.itemQuantity; i < 0; i++)
+                            {
+                                fromInventoryItem.itemQuantity += 1;
+                            }
+                        }
+                        else
+                        {
+                            fromInventoryItem.itemQuantity = toInventoryItem.itemQuantity - beforeSwapToInventory;
+                        }
+                    }
+                    inventoryLists[(int)inventoryLocation][toItem] = toInventoryItem;
+                    inventoryLists[(int)inventoryLocation][fromItem] = fromInventoryItem;
+                }
+            }
+            else
+            {
+                inventoryLists[(int)inventoryLocation][toItem] = fromInventoryItem;
+                inventoryLists[(int)inventoryLocation][fromItem] = toInventoryItem;
+            }
 
             //  Send event that inventory has been updated
             EventHandler.CallInventoryUpdatedEvent(inventoryLocation, inventoryLists[(int)inventoryLocation]);
