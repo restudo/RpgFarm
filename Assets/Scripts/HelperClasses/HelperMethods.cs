@@ -15,12 +15,12 @@ public static class HelperMethods
         Collider2D[] collider2DArray = Physics2D.OverlapPointAll(positionToCheck);
 
         // Loop through all colliders to get an object of type T
-
         T tComponent = default(T);
 
         for (int i = 0; i < collider2DArray.Length; i++)
         {
             tComponent = collider2DArray[i].gameObject.GetComponentInParent<T>();
+
             if (tComponent != null)
             {
                 found = true;

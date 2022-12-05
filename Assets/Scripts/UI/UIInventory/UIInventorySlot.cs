@@ -37,6 +37,7 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         EventHandler.AfterSceneLoadEvent -= SceneLoaded;
         EventHandler.RemoveSelectedItemFromInventoryEvent -= RemoveSelectedItemFromInventory;
         EventHandler.DropSelectedItemEvent -= DropSelectedItemAtMousePosition;
+        EventHandler.InventorySlotSelectedKeyboardEvent -= InventorySelectedKeyboardEvent;
     }
 
     private void OnEnable()
@@ -44,6 +45,7 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
         EventHandler.AfterSceneLoadEvent += SceneLoaded;
         EventHandler.RemoveSelectedItemFromInventoryEvent += RemoveSelectedItemFromInventory;
         EventHandler.DropSelectedItemEvent += DropSelectedItemAtMousePosition;
+        EventHandler.InventorySlotSelectedKeyboardEvent += InventorySelectedKeyboardEvent;
     }
 
 
@@ -132,7 +134,7 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
     /// <summary>
     /// Drops the item (if selected) at the current mouse position.  Called by the DropItem event.
     /// </summary>
-    private void DropSelectedItemAtMousePosition()
+    private void DropSelectedItemAtMousePosition(Vector3 offset)
     {
         if (itemDetails != null && isSelected)
         {
@@ -141,7 +143,7 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             {
                 Vector3 worldPosition = mainCamera.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, -mainCamera.transform.position.z));
                 // Create item from prefab at mouse position
-                GameObject itemGameObject = Instantiate(itemPrefab, new Vector3(worldPosition.x, worldPosition.y - Settings.gridCellSize / 2f, worldPosition.z), Quaternion.identity, parentItem);
+                GameObject itemGameObject = Instantiate(itemPrefab, new Vector3(worldPosition.x, worldPosition.y - Settings.gridCellSize / 2f, worldPosition.z) + offset, Quaternion.identity, parentItem);
                 Item item = itemGameObject.GetComponent<Item>();
                 item.ItemCode = itemDetails.itemCode;
 
@@ -171,6 +173,26 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             if (InventoryManager.Instance.FindItemInInventory(InventoryLocation.player, itemCode) == -1)
             {
                 ClearSelectedItem();
+            }
+        }
+    }
+
+    private void InventorySelectedKeyboardEvent(int slotSelected)
+    {
+        // if slot selected is this slot
+        if (slotSelected == slotNumber)
+        {
+            // if inventory slot currently selected then deselect
+            if (isSelected)
+            {
+                ClearSelectedItem();
+            }
+            else
+            {
+                if (itemQuantity > 0)
+                {
+                    SetSelectedItem();
+                }
             }
         }
     }
@@ -234,24 +256,38 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                     // Drop a single item
                     if (Input.GetKey(KeyCode.LeftShift))
                     {
+                        int stackSize = Mathf.RoundToInt(itemQuantity / 2);
+                        for (int i = 0; i < stackSize; i++)
+                        {
+                            Vector3 offset = new Vector3(Random.Range(-1, 1f), Random.Range(-1, 1f), 0);
+                            DropSelectedItemAtMousePosition(offset);
+                        }
+                    }
+                    else if (Input.GetKey(KeyCode.LeftControl))
+                    {
+
+                        Vector3 offset = new Vector3(0, 0, 0);
+                        DropSelectedItemAtMousePosition(offset);
+                    }
+                    else
+                    {
                         // Drop a full stack of items
                         int stackSize = itemQuantity;
 
                         // Store a temporary stackSize variable
                         for (int i = 0; i < stackSize; i++)
                         {
-                            DropSelectedItemAtMousePosition();
+                            Vector3 offset = new Vector3(Random.Range(-2, 2f), Random.Range(-1, 1f), 0);
+                            DropSelectedItemAtMousePosition(offset);
                         }
-                    }
-                    else
-                    {
-                        DropSelectedItemAtMousePosition();
                     }
                 }
             }
 
             // Enable player input
             Player.Instance.EnablePlayerInput();
+
+
         }
     }
 

@@ -5,12 +5,12 @@ using UnityEngine;
 public static class EventHandler
 {
     // Drop selected item event
-    public static event Action DropSelectedItemEvent;
+    public static event Action<Vector3> DropSelectedItemEvent;
 
-    public static void CallDropSelectedItemEvent()
+    public static void CallDropSelectedItemEvent(Vector3 offset)
     {
         if (DropSelectedItemEvent != null)
-            DropSelectedItemEvent();
+            DropSelectedItemEvent(offset);
     }
 
     // Harvest Action Effect Event
@@ -31,6 +31,14 @@ public static class EventHandler
             RemoveSelectedItemFromInventoryEvent();
     }
 
+    // UI Slot Selection Keyboard Event
+    public static event Action<int> InventorySlotSelectedKeyboardEvent;
+
+    public static void CallInventorySlotSelectedKeyboardEvent(int slotNum)
+    {
+        if (InventorySlotSelectedKeyboardEvent != null)
+            InventorySlotSelectedKeyboardEvent(slotNum);
+    }
 
     // Inventory Updated Event
     public static event Action<InventoryLocation, List<InventoryItem>> InventoryUpdatedEvent;

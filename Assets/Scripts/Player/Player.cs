@@ -16,6 +16,7 @@ public class Player : SingletonMonobehaviour<Player>
 
     private GridCursor gridCursor;
     private Cursor cursor;
+    private Vector3 offset = new Vector3(0, 0, 0);
 
     // picking condition for harvest with basket
     private bool isUsingToolRight = false;
@@ -106,6 +107,8 @@ public class Player : SingletonMonobehaviour<Player>
             PlayerTestInput();
 
             PlayerClickInput();
+
+            PlayerInventorySlotKeyboardSelection();
         }
     }
 
@@ -212,6 +215,57 @@ public class Player : SingletonMonobehaviour<Player>
         }
     }
 
+    /// <summary>
+    /// Detect Player Keyboard Input to select inventory Slot 
+    /// </summary>
+    private void PlayerInventorySlotKeyboardSelection()
+    {
+        string numSelected;
+        switch (Input.inputString)
+        {
+            case "1":
+                numSelected = "0";
+                break;
+
+            case "2":
+                numSelected = "1";
+                break;
+
+            case "3":
+                numSelected = "2";
+                break;
+
+            case "4":
+                numSelected = "3";
+                break;
+
+            case "5":
+                numSelected = "4";
+                break;
+
+            case "6":
+                numSelected = "5";
+                break;
+
+            case "7":
+                numSelected = "6";
+                break;
+
+            case "8":
+                numSelected = "7";
+                break;
+
+            default:
+                numSelected = "";
+                break;
+        }
+
+        if (numSelected != "")
+        {
+            EventHandler.CallInventorySlotSelectedKeyboardEvent(int.Parse(numSelected));
+        }
+    }
+
     private void ProcessPlayerClickInput(Vector3Int cursorGridPosition, Vector3Int playerGridPosition)
     {
         ResetMovement();
@@ -247,15 +301,22 @@ public class Player : SingletonMonobehaviour<Player>
                 case ItemType.Collecting_tool:
                 case ItemType.Breaking_tool:
                 case ItemType.Reaping_tool:
-                    if (Stamina > 0)
+                    if (Stamina == 50)
                     {
-                        ProcessPlayerClickInputTool(gridPropertyDetails, itemDetails, playerDirection);
+                        // TODO: Change animation
+                        // Stamina 50 animation
+                        StartCoroutine(StaminaFifty(playerDirection, gridPropertyDetails));
+                        Debug.Log("Stamina Fifty");
                     }
                     else if (Stamina <= 0)
                     {
                         // Stamina Zero animation
                         StartCoroutine(StaminaZero(playerDirection, gridPropertyDetails));
                         Debug.Log("Stamina abis");
+                    }
+                    else if (Stamina > 0)
+                    {
+                        ProcessPlayerClickInputTool(gridPropertyDetails, itemDetails, playerDirection);
                     }
                     break;
 
@@ -273,6 +334,39 @@ public class Player : SingletonMonobehaviour<Player>
     }
 
     private IEnumerator StaminaZero(Vector3Int playerDirection, GridPropertyDetails gridPropertyDetails)
+    {
+        playerInputIsDisabled = true;
+        playerToolUseDisabled = true;
+
+        if (playerDirection == Vector3Int.right)
+        {
+            if (!facingRight)
+            {
+                Flip();
+            }
+            anim.SetBool(isStaminaZero, true);
+        }
+        else if (playerDirection == Vector3Int.left)
+        {
+            if (facingRight)
+            {
+                Flip();
+            }
+            anim.SetBool(isStaminaZero, true);
+        }
+
+        yield return useToolAnimationPause;
+
+        // After animation pause
+        yield return afterUseToolAnimationPause;
+
+        anim.SetBool(isStaminaZero, false);
+
+        playerInputIsDisabled = false;
+        playerToolUseDisabled = false;
+    }
+
+    private IEnumerator StaminaFifty(Vector3Int playerDirection, GridPropertyDetails gridPropertyDetails)
     {
         playerInputIsDisabled = true;
         playerToolUseDisabled = true;
@@ -373,20 +467,27 @@ public class Player : SingletonMonobehaviour<Player>
     {
         if (itemDetails.canBeDropped && gridCursor.CursorPositionIsValid && gridPropertyDetails.daysSinceDug > -1 && gridPropertyDetails.seedItemCode == -1)
         {
-            if (Stamina > 0)
+            if (Stamina == 50)
             {
-                PlantSeedAtCursor(gridPropertyDetails, itemDetails);
+                // TODO: Change animation
+                // Stamina 50 animation
+                StartCoroutine(StaminaFifty(playerDirection, gridPropertyDetails));
+                Debug.Log("Stamina Fifty");
             }
-            else
+            else if (Stamina <= 0)
             {
                 // Stamina Zero animation
                 StartCoroutine(StaminaZero(playerDirection, gridPropertyDetails));
                 Debug.Log("Stamina abis");
             }
+            else if (Stamina > 0)
+            {
+                PlantSeedAtCursor(gridPropertyDetails, itemDetails);
+            }
         }
         else if (itemDetails.canBeDropped && gridCursor.CursorPositionIsValid)
         {
-            EventHandler.CallDropSelectedItemEvent();
+            EventHandler.CallDropSelectedItemEvent(offset);
         }
     }
 
@@ -416,7 +517,7 @@ public class Player : SingletonMonobehaviour<Player>
     {
         if (itemDetails.canBeDropped && gridCursor.CursorPositionIsValid)
         {
-            EventHandler.CallDropSelectedItemEvent();
+            EventHandler.CallDropSelectedItemEvent(offset);
         }
     }
 
@@ -940,6 +1041,16 @@ public class Player : SingletonMonobehaviour<Player>
         {
             Debug.Log(Stamina);
             Debug.Log("Default Stamina " + defaultStamina);
+        }
+        if (Input.GetKeyDown(KeyCode.L)) // if the weather is raining
+        {
+            Stamina -= 2 + (2 * 50 / 100);
+            Debug.Log(Stamina);
+        }
+        if (Input.GetKeyDown(KeyCode.K)) // if the weather is raining
+        {
+            Stamina -= 1 + (1 * 50 / 100);
+            Debug.Log(Stamina);
         }
     }
 
