@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
 
 [RequireComponent(typeof(GenerateGUID))]
@@ -617,6 +618,16 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
         SaveLoadManager.Instance.iSaveableObjectList.Remove(this);
     }
 
+    public void ISaveableLoad(GameSave gameSave)
+    {
+        if (gameSave.gameObjectData.TryGetValue(ISaveableUniqueID, out GameObjectSave gameObjectSave))
+        {
+            GameObjectSave = gameObjectSave;
+
+            // Restore data for current scene
+            ISaveableRestoreScene(SceneManager.GetActiveScene().name);
+        }
+    }
     public void ISaveableRegister()
     {
         SaveLoadManager.Instance.iSaveableObjectList.Add(this);
@@ -665,6 +676,13 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
                 isFirstTimeSceneLoaded = true;
             }
         }
+    }
+    public GameObjectSave ISaveableSave()
+    {
+        // Store current scene data
+        ISaveableStoreScene(SceneManager.GetActiveScene().name);
+
+        return GameObjectSave;
     }
 
     public void ISaveableStoreScene(string sceneName)

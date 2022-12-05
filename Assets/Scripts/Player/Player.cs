@@ -2,8 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-public class Player : SingletonMonobehaviour<Player>
+public class Player : SingletonMonobehaviour<Player>, ISaveable
 {
     // animation tools
     private bool playerToolUseDisabled = false;
@@ -30,6 +31,12 @@ public class Player : SingletonMonobehaviour<Player>
     private float xInput, yInput;
     private bool _playerInputIsDisabled = false;
     public bool playerInputIsDisabled { get => _playerInputIsDisabled; set => _playerInputIsDisabled = value; }
+
+    private string _iSaveableUniqueID;
+    public string ISaveableUniqueID { get { return _iSaveableUniqueID; } set { _iSaveableUniqueID = value; } }
+
+    private GameObjectSave _gameObjectSave;
+    public GameObjectSave GameObjectSave { get { return _gameObjectSave; } set { _gameObjectSave = value; } }
 
     // animation
     private int isWalking;
@@ -59,10 +66,17 @@ public class Player : SingletonMonobehaviour<Player>
     protected override void Awake()
     {
         base.Awake();
+
+        // Get unique ID for gameobject and create save data object
+        ISaveableUniqueID = GetComponent<GenerateGUID>().GUID;
+
+        GameObjectSave = new GameObjectSave();
     }
 
     private void OnDisable()
     {
+        ISaveableDeregister();
+
         EventHandler.BeforeSceneUnloadFadeOutEvent -= DisablePlayerInputAndResetMovement;
         EventHandler.AfterSceneLoadFadeInEvent -= EnablePlayerInput;
     }
@@ -70,6 +84,8 @@ public class Player : SingletonMonobehaviour<Player>
 
     private void OnEnable()
     {
+        ISaveableRegister();
+
         EventHandler.BeforeSceneUnloadFadeOutEvent += DisablePlayerInputAndResetMovement;
         EventHandler.AfterSceneLoadFadeInEvent += EnablePlayerInput;
     }
@@ -601,12 +617,6 @@ public class Player : SingletonMonobehaviour<Player>
         playerInputIsDisabled = true;
         playerToolUseDisabled = true;
 
-        // Set tool animation to hoe in override animation
-        // toolCharacterAttribute.partVariantType = PartVariantType.hoe;
-        // characterAttributeCustomisationList.Clear();
-        // characterAttributeCustomisationList.Add(toolCharacterAttribute);
-        // animationOverrides.ApplyCharacterCustomisationParameters(characterAttributeCustomisationList);
-
         if (playerDirection == Vector3Int.right)
         {
             if (!facingRight)
@@ -658,12 +668,7 @@ public class Player : SingletonMonobehaviour<Player>
         playerInputIsDisabled = true;
         playerToolUseDisabled = true;
 
-        // Set tool animation to watering can in override animation
-        // toolCharacterAttribute.partVariantType = PartVariantType.wateringCan;
-        // characterAttributeCustomisationList.Clear();
-        // characterAttributeCustomisationList.Add(toolCharacterAttribute);
-        // animationOverrides.ApplyCharacterCustomisationParameters(characterAttributeCustomisationList);
-
+        // TODO: Change the animation to watering animation
         if (playerDirection == Vector3Int.right)
         {
             if (!facingRight)
@@ -706,6 +711,7 @@ public class Player : SingletonMonobehaviour<Player>
         // After animation pause
         yield return afterLiftToolAnimationPause;
 
+        // TODO: Change the animation to Watering animation
         anim.SetBool(isUsingHoe, false);
 
         Debug.Log(WaterQuantity);
@@ -725,12 +731,6 @@ public class Player : SingletonMonobehaviour<Player>
         playerInputIsDisabled = true;
         playerToolUseDisabled = true;
 
-        // Set tool animation to axe in override animation
-        // toolCharacterAttribute.partVariantType = PartVariantType.axe;
-        // characterAttributeCustomisationList.Clear();
-        // characterAttributeCustomisationList.Add(toolCharacterAttribute);
-        // animationOverrides.ApplyCharacterCustomisationParameters(characterAttributeCustomisationList);
-
         ProcessCropWithEquippedItemInPlayerDirection(playerDirection, equippedItemDetails, gridPropertyDetails);
 
         yield return useToolAnimationPause;
@@ -738,6 +738,7 @@ public class Player : SingletonMonobehaviour<Player>
         // After animation pause
         yield return afterUseToolAnimationPause;
 
+        // TODO: Change the animation to Chopping animation
         anim.SetBool(isUsingHoe, false);
 
         playerInputIsDisabled = false;
@@ -763,6 +764,7 @@ public class Player : SingletonMonobehaviour<Player>
         // After animation pause
         yield return afterPickAnimationPause;
 
+        // TODO: Change the animation to Collecting animation
         anim.SetBool(isUsingHoe, false);
 
         playerInputIsDisabled = false;
@@ -780,12 +782,6 @@ public class Player : SingletonMonobehaviour<Player>
         playerInputIsDisabled = true;
         playerToolUseDisabled = true;
 
-        // Set tool animation to pickaxe in override animation
-        // toolCharacterAttribute.partVariantType = PartVariantType.pickaxe;
-        // characterAttributeCustomisationList.Clear();
-        // characterAttributeCustomisationList.Add(toolCharacterAttribute);
-        // animationOverrides.ApplyCharacterCustomisationParameters(characterAttributeCustomisationList);
-
         ProcessCropWithEquippedItemInPlayerDirection(playerDirection, equippedItemDetails, gridPropertyDetails);
 
         yield return useToolAnimationPause;
@@ -793,6 +789,7 @@ public class Player : SingletonMonobehaviour<Player>
         // After animation pause
         yield return afterUseToolAnimationPause;
 
+        // TODO: Change the animation to Breaking animation
         anim.SetBool(isUsingHoe, false);
 
         playerInputIsDisabled = false;
@@ -809,17 +806,12 @@ public class Player : SingletonMonobehaviour<Player>
         playerInputIsDisabled = true;
         playerToolUseDisabled = true;
 
-        // Set tool animation to scythe in override animation
-        // toolCharacterAttribute.partVariantType = PartVariantType.scythe;
-        // characterAttributeCustomisationList.Clear();
-        // characterAttributeCustomisationList.Add(toolCharacterAttribute);
-        // animationOverrides.ApplyCharacterCustomisationParameters(characterAttributeCustomisationList);
-
         // Reap in player direction
         UseToolInPlayerDirection(itemDetails, playerDirection);
 
         yield return useToolAnimationPause;
 
+        // TODO: Change the animation to Reaping animation
         anim.SetBool(isUsingHoe, false);
 
         playerInputIsDisabled = false;
@@ -833,6 +825,7 @@ public class Player : SingletonMonobehaviour<Player>
             switch (equippedItemDetails.itemType)
             {
                 case ItemType.Reaping_tool:
+                    // TODO: Change the animation to Reaping animation
                     if (playerDirection == Vector3Int.right)
                     {
                         if (!facingRight)
@@ -895,8 +888,32 @@ public class Player : SingletonMonobehaviour<Player>
     {
         switch (equippedItemDetails.itemType)
         {
-            case ItemType.Chopping_tool:
             case ItemType.Breaking_tool:
+                // TODO: Change the animation to Breaking animation
+                if (playerDirection == Vector3Int.right)
+                {
+                    isUsingToolRight = true;
+
+                    if (!facingRight)
+                    {
+                        Flip();
+                    }
+                    anim.SetBool(isUsingHoe, true);
+                }
+                else if (playerDirection == Vector3Int.left)
+                {
+                    isUsingToolRight = false;
+
+                    if (facingRight)
+                    {
+                        Flip();
+                    }
+                    anim.SetBool(isUsingHoe, true);
+                }
+                break;
+
+            case ItemType.Chopping_tool:
+                // TODO: Change the animation to Chopping animation
                 if (playerDirection == Vector3Int.right)
                 {
                     isUsingToolRight = true;
@@ -920,6 +937,7 @@ public class Player : SingletonMonobehaviour<Player>
                 break;
 
             case ItemType.Collecting_tool:
+                // TODO: Change the animation to Collection animation
                 if (playerDirection == Vector3Int.right)
                 {
                     isPickingRight = true;
@@ -1001,6 +1019,7 @@ public class Player : SingletonMonobehaviour<Player>
 
         }
 
+        // TODO: Add Eating Mechanics
         // Debug test for stamina
         if (Input.GetKeyDown(KeyCode.Y))
         {
@@ -1124,5 +1143,107 @@ public class Player : SingletonMonobehaviour<Player>
             default:
                 break;
         }
+    }
+
+    public void ISaveableRegister()
+    {
+        SaveLoadManager.Instance.iSaveableObjectList.Add(this);
+    }
+
+    public void ISaveableDeregister()
+    {
+        SaveLoadManager.Instance.iSaveableObjectList.Remove(this);
+    }
+
+    public GameObjectSave ISaveableSave()
+    {
+        // Delete saveScene for game object if it already exists
+        GameObjectSave.sceneData.Remove(Settings.PersistentScene);
+
+        // Create saveScene for game object
+        SceneSave sceneSave = new SceneSave();
+
+        // Create Vector3 Dictionary
+        sceneSave.vector3Dictionary = new Dictionary<string, Vector3Serializable>();
+
+        //  Create String Dictionary
+        sceneSave.stringDictionary = new Dictionary<string, string>();
+
+        // Create int Dictionary
+        sceneSave.intDictionary = new Dictionary<string, int>();
+
+        // Add Player position to Vector3 dictionary
+        Vector3Serializable vector3Serializable = new Vector3Serializable(transform.position.x, transform.position.y, transform.position.z);
+        sceneSave.vector3Dictionary.Add("playerPosition", vector3Serializable);
+
+        // Add Current Scene Name to string dictionary
+        sceneSave.stringDictionary.Add("currentScene", SceneManager.GetActiveScene().name);
+
+        // Add stamina to int Dictionary
+        sceneSave.intDictionary.Add("stamina", Stamina);
+
+        // Add water quantity to int dictionary
+        sceneSave.intDictionary.Add("waterQuantity", WaterQuantity);
+
+        // Add Player Direction to string dictionary
+        // sceneSave.stringDictionary.Add("playerDirection", playerDirection.ToString());
+
+        // Add sceneSave data for player game object
+        GameObjectSave.sceneData.Add(Settings.PersistentScene, sceneSave);
+
+        return GameObjectSave;
+    }
+
+    public void ISaveableLoad(GameSave gameSave)
+    {
+        if (gameSave.gameObjectData.TryGetValue(ISaveableUniqueID, out GameObjectSave gameObjectSave))
+        {
+            // Get save data dictionary for scene
+            if (gameObjectSave.sceneData.TryGetValue(Settings.PersistentScene, out SceneSave sceneSave))
+            {
+                // Get player position
+                if (sceneSave.vector3Dictionary != null && sceneSave.vector3Dictionary.TryGetValue("playerPosition", out Vector3Serializable playerPosition))
+                {
+                    transform.position = new Vector3(playerPosition.x, playerPosition.y, playerPosition.z);
+                }
+
+                // Get String dictionary
+                if (sceneSave.stringDictionary != null)
+                {
+                    // Get player scene
+                    if (sceneSave.stringDictionary.TryGetValue("currentScene", out string currentScene))
+                    {
+                        SceneControllerManager.Instance.FadeAndLoadScene(currentScene, transform.position);
+                    }
+                }
+
+                // Get int Dictionary
+                if (sceneSave.intDictionary != null)
+                {
+                    // Get Player Stamina
+                    if (sceneSave.intDictionary.TryGetValue("stamina", out int currentStamina))
+                    {
+                        Stamina = currentStamina;
+                    }
+
+                    // Get Player Water Quantity
+                    if (sceneSave.intDictionary.TryGetValue("waterQuantity", out int currentWaterQuantity))
+                    {
+                        WaterQuantity = currentWaterQuantity;
+                    }
+                }
+            }
+        }
+    }
+
+    public void ISaveableStoreScene(string sceneName)
+    {
+        // Nothing required here since the player is on a persistent scene;
+    }
+
+
+    public void ISaveableRestoreScene(string sceneName)
+    {
+        // Nothing required here since the player is on a persistent scene;
     }
 }

@@ -8,6 +8,10 @@
 
     void ISaveableDeregister();
 
+    GameObjectSave ISaveableSave();
+
+    void ISaveableLoad(GameSave gameSave);
+
     void ISaveableStoreScene(string sceneName);
 
     void ISaveableRestoreScene(string sceneName);

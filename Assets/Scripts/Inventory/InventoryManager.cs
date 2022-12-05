@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class InventoryManager : SingletonMonobehaviour<InventoryManager>
+public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISaveable
 {
+    private UIInventoryBar inventoryBar;
     private bool isItemCanBeAdd = true;
     private int sumItemInInventory = 0;
 
@@ -17,6 +18,12 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
                                                                     //and the value is the capacity of that inventory list
 
     [SerializeField] private SO_ItemList itemList = null;
+
+    private string _iSaveableUniqueID;
+    public string ISaveableUniqueID { get { return _iSaveableUniqueID; } set { _iSaveableUniqueID = value; } }
+
+    private GameObjectSave _gameObjectSave;
+    public GameObjectSave GameObjectSave { get { return _gameObjectSave; } set { _gameObjectSave = value; } }
 
 
     protected override void Awake()
@@ -37,6 +44,26 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
             selectedInventoryItem[i] = -1;
         }
 
+        // Get unique ID for gameobject and create save data object
+        ISaveableUniqueID = GetComponent<GenerateGUID>().GUID;
+
+        GameObjectSave = new GameObjectSave();
+    }
+
+    private void OnDisable()
+    {
+        ISaveableDeregister();
+    }
+
+
+    private void OnEnable()
+    {
+        ISaveableRegister();
+    }
+
+    private void Start()
+    {
+        inventoryBar = FindObjectOfType<UIInventoryBar>();
     }
 
     private void Update()
@@ -45,6 +72,10 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
         if (Input.GetKeyDown(KeyCode.M) && inventoryListCapacityIntArray[(int)InventoryLocation.player] < Settings.playerMaximumInventoryCapacity)
         {
             inventoryListCapacityIntArray[(int)InventoryLocation.player] += 1;
+        }
+        if (Input.GetKeyDown(KeyCode.N))
+        {
+            Debug.Log("inventoryListCapacityIntArray : " + inventoryListCapacityIntArray[(int)InventoryLocation.player]);
         }
     }
 
@@ -62,7 +93,6 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
 
         // initialise player inventory list capacity
         inventoryListCapacityIntArray[(int)InventoryLocation.player] = Settings.playerInitialInventoryCapacity;
-        // Debug.Log(inventoryListCapacityIntArray[(int)InventoryLocation.player]);
 
         // initialise chest inventory list capacity
         // inventoryListCapacityIntArray[(int)InventoryLocation.chest] = Settings.ChestInitialInventoryCapacity;
@@ -433,4 +463,93 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
     //    Debug.Log("******************************************************************************");
     //}
 
+    public void ISaveableRegister()
+    {
+        SaveLoadManager.Instance.iSaveableObjectList.Add(this);
+    }
+
+    public void ISaveableDeregister()
+    {
+        SaveLoadManager.Instance.iSaveableObjectList.Remove(this);
+    }
+
+    public GameObjectSave ISaveableSave()
+    {
+        // Create new scene save
+        SceneSave sceneSave = new SceneSave();
+
+        // Remove any existing scene save for persistent scene for this gameobject
+        GameObjectSave.sceneData.Remove(Settings.PersistentScene);
+
+        // Add inventory lists array to persistent scene save
+        sceneSave.listInvItemArray = inventoryLists;
+
+        // Add  inventory list capacity array to persistent scene save
+        sceneSave.intArrayDictionary = new Dictionary<string, int[]>();
+        sceneSave.intArrayDictionary.Add("inventoryListCapacityArray", inventoryListCapacityIntArray);
+
+        // Add sumItemInInventory to persisten scene save
+        sceneSave.intDictionary = new Dictionary<string, int>();
+        sceneSave.intDictionary.Add("sumItemInInventory", sumItemInInventory);
+
+        // Add scene save for gameobject
+        GameObjectSave.sceneData.Add(Settings.PersistentScene, sceneSave);
+
+        return GameObjectSave;
+    }
+
+
+    public void ISaveableLoad(GameSave gameSave)
+    {
+        if (gameSave.gameObjectData.TryGetValue(ISaveableUniqueID, out GameObjectSave gameObjectSave))
+        {
+            GameObjectSave = gameObjectSave;
+
+            // Need to find inventory lists - start by trying to locate saveScene for game object
+            if (gameObjectSave.sceneData.TryGetValue(Settings.PersistentScene, out SceneSave sceneSave))
+            {
+                // list inv items array exists for persistent scene
+                if (sceneSave.listInvItemArray != null)
+                {
+                    inventoryLists = sceneSave.listInvItemArray;
+
+                    //  Send events that inventory has been updated
+                    for (int i = 0; i < (int)InventoryLocation.count; i++)
+                    {
+                        EventHandler.CallInventoryUpdatedEvent((InventoryLocation)i, inventoryLists[i]);
+                    }
+
+                    // Clear any items player was carrying
+                    // Player.Instance.ClearCarriedItem();
+
+                    // Clear any highlights on inventory bar
+                    inventoryBar.ClearHighlightOnInventorySlots();
+                }
+
+                // int array dictionary exists for scene
+                if (sceneSave.intArrayDictionary != null)
+                {
+                    if (sceneSave.intArrayDictionary.TryGetValue("inventoryListCapacityArray", out int[] inventoryCapacityArray))
+                    {
+                        inventoryListCapacityIntArray = inventoryCapacityArray;
+                    }
+
+                    if (sceneSave.intDictionary.TryGetValue("sumItemInInventory", out int currentSumItemInInventory))
+                    {
+                        sumItemInInventory = currentSumItemInInventory;
+                    }
+                }
+            }
+        }
+    }
+
+    public void ISaveableStoreScene(string sceneName)
+    {
+        // Nothing required her since the inventory manager is on a persistent scene;
+    }
+
+    public void ISaveableRestoreScene(string sceneName)
+    {
+        // Nothing required here since the inventory manager is on a persistent scene;
+    }
 }
