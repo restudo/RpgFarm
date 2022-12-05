@@ -167,6 +167,22 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>
 
     //TODO:Remove
     /// <summary>
+    /// Advance Normal Penalty Day
+    /// </summary>
+    public void TestAdvanceNormalPenaltyGameDay()
+    {
+        for (int i = 0; i < 86400; i++)
+        {
+            if (gameHour == 7 && gameMinute >= 59)
+            {
+                break;
+            }
+            UpdateGameSecond();
+        }
+
+    }
+    //TODO:Remove
+    /// <summary>
     /// Advance Normal Day
     /// </summary>
     public void TestAdvanceNormalGameDay()

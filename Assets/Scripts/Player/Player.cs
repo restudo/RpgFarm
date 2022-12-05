@@ -33,6 +33,7 @@ public class Player : SingletonMonobehaviour<Player>
     // animation
     private int isWalking;
     private int isUsingHoe;
+    private int isStaminaZero;
 
     // camera
     private Camera mainCamera;
@@ -45,6 +46,14 @@ public class Player : SingletonMonobehaviour<Player>
     public int Stamina { get => _stamina; set => _stamina = value; }
     private int defaultStamina;
     public int DefaultStamina { get => defaultStamina; set => defaultStamina = value; }
+
+    [Header("Water Quantity")]
+    [SerializeField] private int _waterQuantity = 50;
+    public int WaterQuantity { get => _waterQuantity; set => _waterQuantity = value; }
+    private bool isFillWater = false;
+
+    [Header("SO_CropDetails")]
+    [SerializeField] private SO_CropDetailsList so_CropDetailsList;
 
     protected override void Awake()
     {
@@ -72,6 +81,7 @@ public class Player : SingletonMonobehaviour<Player>
 
         isWalking = Animator.StringToHash("isWalking");
         isUsingHoe = Animator.StringToHash("isUsingHoe");
+        isStaminaZero = Animator.StringToHash("isStaminaZero");
 
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
@@ -145,6 +155,7 @@ public class Player : SingletonMonobehaviour<Player>
         {
             if (Input.GetMouseButton(0))
             {
+
                 if (gridCursor.CursorIsEnabled || cursor.CursorIsEnabled)
                 {
                     // Get Cursor Grid Position
@@ -156,30 +167,48 @@ public class Player : SingletonMonobehaviour<Player>
                     ProcessPlayerClickInput(cursorGridPosition, playerGridPosition);
                 }
             }
-        }
 
-        // Trigger sleep
-        if (playerIsOnTheBed && Input.GetKeyDown(KeyCode.E))
-        {
-            if (TimeManager.Instance.GameHour >= 0 && TimeManager.Instance.GameHour <= 4)
+            // Trigger sleep
+            if (playerIsOnTheBed && Input.GetKeyDown(KeyCode.E))
             {
-                // set Default stamina to 70 because of penalty
-                DefaultStamina = Settings.playerMaxPenaltyStamina;
-                // set stamina to 50 because of penalty
-                Stamina = Settings.playerInitialPenaltyStamina;
+                if (TimeManager.Instance.GameHour >= 0 && TimeManager.Instance.GameHour <= 4 && Stamina <= 10)
+                {
+                    // set Default stamina to 70 because of penalty
+                    DefaultStamina = Settings.playerMaxPenaltyStamina;
+                    // set stamina to 50 because of penalty
+                    Stamina = Settings.playerInitialPenaltyStamina;
 
-                TimeManager.Instance.TestAdvancePenaltyGameDay();
+                    TimeManager.Instance.TestAdvancePenaltyGameDay();
+                }
+                else if (TimeManager.Instance.GameHour >= 0 && TimeManager.Instance.GameHour <= 4 && Stamina > 10)
+                {
+                    // set stamina back to default
+                    DefaultStamina = Settings.playerInitialDefaultStamina;
+                    Stamina = DefaultStamina;
+
+                    // set time to penalty at 8 oclock
+                    TimeManager.Instance.TestAdvanceNormalPenaltyGameDay();
+                }
+                else
+                {
+                    // set stamina back to default
+                    DefaultStamina = Settings.playerInitialDefaultStamina;
+                    Stamina = DefaultStamina;
+
+                    TimeManager.Instance.TestAdvanceNormalGameDay();
+                }
             }
-            else
+
+            if (isFillWater && Input.GetKeyDown(KeyCode.E))
             {
-                // set stamina back to default
-                DefaultStamina = Settings.playerInitialDefaultStamina;
-                Stamina = DefaultStamina;
-
-                TimeManager.Instance.TestAdvanceNormalGameDay();
+                // Get Selected item details
+                ItemDetails itemDetails = InventoryManager.Instance.GetSelectedInventoryItemDetails(InventoryLocation.player);
+                if (itemDetails.itemType == ItemType.Watering_tool)
+                {
+                    WaterQuantity = 50;
+                    Debug.Log(WaterQuantity);
+                }
             }
-
-            playerIsOnTheBed = false;
         }
     }
 
@@ -201,7 +230,7 @@ public class Player : SingletonMonobehaviour<Player>
                 case ItemType.Seed:
                     if (Input.GetMouseButtonDown(0))
                     {
-                        ProcessPlayerClickInputSeed(gridPropertyDetails, itemDetails);
+                        ProcessPlayerClickInputSeed(gridPropertyDetails, itemDetails, playerDirection);
                     }
                     break;
 
@@ -218,7 +247,16 @@ public class Player : SingletonMonobehaviour<Player>
                 case ItemType.Collecting_tool:
                 case ItemType.Breaking_tool:
                 case ItemType.Reaping_tool:
-                    ProcessPlayerClickInputTool(gridPropertyDetails, itemDetails, playerDirection);
+                    if (Stamina > 0)
+                    {
+                        ProcessPlayerClickInputTool(gridPropertyDetails, itemDetails, playerDirection);
+                    }
+                    else if (Stamina <= 0)
+                    {
+                        // Stamina Zero animation
+                        StartCoroutine(StaminaZero(playerDirection, gridPropertyDetails));
+                        Debug.Log("Stamina abis");
+                    }
                     break;
 
                 case ItemType.none:
@@ -230,7 +268,41 @@ public class Player : SingletonMonobehaviour<Player>
                 default:
                     break;
             }
+
         }
+    }
+
+    private IEnumerator StaminaZero(Vector3Int playerDirection, GridPropertyDetails gridPropertyDetails)
+    {
+        playerInputIsDisabled = true;
+        playerToolUseDisabled = true;
+
+        if (playerDirection == Vector3Int.right)
+        {
+            if (!facingRight)
+            {
+                Flip();
+            }
+            anim.SetBool(isStaminaZero, true);
+        }
+        else if (playerDirection == Vector3Int.left)
+        {
+            if (facingRight)
+            {
+                Flip();
+            }
+            anim.SetBool(isStaminaZero, true);
+        }
+
+        yield return useToolAnimationPause;
+
+        // After animation pause
+        yield return afterUseToolAnimationPause;
+
+        anim.SetBool(isStaminaZero, false);
+
+        playerInputIsDisabled = false;
+        playerToolUseDisabled = false;
     }
 
     private Vector3Int GetPlayerClickDirection(Vector3Int cursorGridPosition, Vector3Int playerGridPosition)
@@ -297,11 +369,20 @@ public class Player : SingletonMonobehaviour<Player>
         }
     }
 
-    private void ProcessPlayerClickInputSeed(GridPropertyDetails gridPropertyDetails, ItemDetails itemDetails)
+    private void ProcessPlayerClickInputSeed(GridPropertyDetails gridPropertyDetails, ItemDetails itemDetails, Vector3Int playerDirection)
     {
         if (itemDetails.canBeDropped && gridCursor.CursorPositionIsValid && gridPropertyDetails.daysSinceDug > -1 && gridPropertyDetails.seedItemCode == -1)
         {
-            PlantSeedAtCursor(gridPropertyDetails, itemDetails);
+            if (Stamina > 0)
+            {
+                PlantSeedAtCursor(gridPropertyDetails, itemDetails);
+            }
+            else
+            {
+                // Stamina Zero animation
+                StartCoroutine(StaminaZero(playerDirection, gridPropertyDetails));
+                Debug.Log("Stamina abis");
+            }
         }
         else if (itemDetails.canBeDropped && gridCursor.CursorPositionIsValid)
         {
@@ -377,6 +458,7 @@ public class Player : SingletonMonobehaviour<Player>
             case ItemType.Collecting_tool:
                 if (gridCursor.CursorPositionIsValid)
                 {
+                    Stamina -= 1;
                     CollectInPlayerDirection(gridPropertyDetails, itemDetails, playerDirection);
                 }
                 break;
@@ -481,9 +563,6 @@ public class Player : SingletonMonobehaviour<Player>
         // characterAttributeCustomisationList.Add(toolCharacterAttribute);
         // animationOverrides.ApplyCharacterCustomisationParameters(characterAttributeCustomisationList);
 
-        // TODO: If there is water in the watering can
-        // toolEffect = ToolEffect.watering;
-
         if (playerDirection == Vector3Int.right)
         {
             if (!facingRight)
@@ -503,22 +582,32 @@ public class Player : SingletonMonobehaviour<Player>
 
         yield return liftToolAnimationPause;
 
-        // Set Grid property details for watered ground
-        if (gridPropertyDetails.daysSinceWatered == -1)
+        if (WaterQuantity > 0)
         {
-            gridPropertyDetails.daysSinceWatered = 0;
+            // TODO: If there is water in the watering can
+            // toolEffect = ToolEffect.watering;
+
+            // Set Grid property details for watered ground
+            if (gridPropertyDetails.daysSinceWatered == -1)
+            {
+                WaterQuantity -= 1;
+
+                gridPropertyDetails.daysSinceWatered = 0;
+            }
+
+            // Set grid property to watered
+            GridPropertiesManager.Instance.SetGridPropertyDetails(gridPropertyDetails.gridX, gridPropertyDetails.gridY, gridPropertyDetails);
+
+            // Display watered grid tiles
+            GridPropertiesManager.Instance.DisplayWateredGround(gridPropertyDetails);
         }
-
-        // Set grid property to watered
-        GridPropertiesManager.Instance.SetGridPropertyDetails(gridPropertyDetails.gridX, gridPropertyDetails.gridY, gridPropertyDetails);
-
-        // Display watered grid tiles
-        GridPropertiesManager.Instance.DisplayWateredGround(gridPropertyDetails);
 
         // After animation pause
         yield return afterLiftToolAnimationPause;
 
         anim.SetBool(isUsingHoe, false);
+
+        Debug.Log(WaterQuantity);
 
         playerInputIsDisabled = false;
         playerToolUseDisabled = false;
@@ -898,6 +987,27 @@ public class Player : SingletonMonobehaviour<Player>
         {
             case Tags.Bed:
                 playerIsOnTheBed = true;
+                break;
+
+            case Tags.Well:
+                isFillWater = true;
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    void OnTriggerExit2D(Collider2D collision)
+    {
+        switch (collision.gameObject.tag)
+        {
+            case Tags.Bed:
+                playerIsOnTheBed = false;
+                break;
+
+            case Tags.Well:
+                isFillWater = false;
                 break;
 
             default:

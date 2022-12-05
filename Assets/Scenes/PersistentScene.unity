@@ -8989,7 +8989,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1689733835}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2.1125808, y: -1.3026457, z: -8.792969}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -11470,6 +11470,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 5
   _stamina: 100
+  _waterQuantity: 50
+  so_CropDetailsList: {fileID: 0}
 --- !u!212 &3498977573899059900
 SpriteRenderer:
   m_ObjectHideFlags: 0

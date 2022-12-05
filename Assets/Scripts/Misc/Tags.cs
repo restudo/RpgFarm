@@ -9,4 +9,6 @@
     public const string ItemsParentTransform = "ItemsParentTransform";
 
     public const string Bed = "Bed";
+    public const string Well = "Well";
+
 }

@@ -10,6 +10,7 @@ TagManager:
   - GroundDecoration2
   - CropsParentTransform
   - Bed
+  - Well
   layers:
   - Default
   - TransparentFX

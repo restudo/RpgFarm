@@ -63,5 +63,18 @@ public class CropDetails
         return -1;
     }
 
+    public Season RequiredSeasonToPlant(int seedItemCode)
+    {
+        for (int i = 0; i < seasons.Length; i++)
+        {
+            if ((int)seasons[i] == seedItemCode)
+            {
+                return seasons[i];
+            }
+        }
+
+        return seasons[2];
+    }
+
 }
 

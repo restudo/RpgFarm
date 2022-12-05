@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class GridCursor : MonoBehaviour
 {
@@ -187,7 +188,13 @@ public class GridCursor : MonoBehaviour
     /// </summary>
     private bool IsCursorValidForSeed(GridPropertyDetails gridPropertyDetails)
     {
+        // get crop details
+        // CropDetails cropDetails = so_CropDetailsList.GetCropDetails(gridPropertyDetails.seedItemCode);
+
+        // Debug.Log(cropDetails.RequiredSeasonToPlant(gridPropertyDetails.seedItemCode));
+
         return gridPropertyDetails.canDropItem;
+
 
     }
 

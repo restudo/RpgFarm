@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class InventoryManager : SingletonMonobehaviour<InventoryManager>
 {
+    private bool isItemCanBeAdd = true;
     private int sumItemInInventory = 0;
 
     private int maxStack = 3;
@@ -40,7 +41,8 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.M))
+        // test to advance the backpack by 1
+        if (Input.GetKeyDown(KeyCode.M) && inventoryListCapacityIntArray[(int)InventoryLocation.player] < Settings.playerMaximumInventoryCapacity)
         {
             inventoryListCapacityIntArray[(int)InventoryLocation.player] += 1;
         }
@@ -84,14 +86,11 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
     /// </summary>
     public void AddItem(InventoryLocation inventoryLocation, Item item, GameObject gameObjectToDelete)
     {
-        if (sumItemInInventory < inventoryListCapacityIntArray[(int)InventoryLocation.player])
+        AddItem(inventoryLocation, item);
+
+        if (isItemCanBeAdd)
         {
-            AddItem(inventoryLocation, item);
             Destroy(gameObjectToDelete);
-        }
-        else
-        {
-            Debug.Log("Gabisa invennya penuh");
         }
     }
 
@@ -109,10 +108,19 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
         if (itemPosition != -1)
         {
             AddItemAtPosition(inventoryList, itemCode, itemPosition);
+            isItemCanBeAdd = true;
         }
         else
         {
-            AddItemAtPosition(inventoryList, itemCode);
+            if (sumItemInInventory < inventoryListCapacityIntArray[(int)InventoryLocation.player])
+            {
+                AddItemAtPosition(inventoryList, itemCode);
+                isItemCanBeAdd = true;
+            }
+            else
+            {
+                isItemCanBeAdd = false;
+            }
         }
 
         //  Send event that inventory has been updated
@@ -132,6 +140,7 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>
         if (itemPosition != -1)
         {
             AddItemAtPosition(inventoryList, itemCode, itemPosition);
+            isItemCanBeAdd = true;
         }
         else
         {
