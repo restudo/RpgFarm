@@ -78,7 +78,7 @@ public class UIInventoryBar : MonoBehaviour
     }
 
 
-    private void InventoryUpdated(InventoryLocation inventoryLocation, List<InventoryItem> inventoryList)
+    private void InventoryUpdated(InventoryLocation inventoryLocation, Dictionary<int, InventoryItem> inventoryList)
     {
         if (inventoryLocation == InventoryLocation.player)
         {
@@ -98,6 +98,7 @@ public class UIInventoryBar : MonoBehaviour
 
                         if (itemDetails != null)
                         {
+
                             // add images and details to inventory item slot
                             inventorySlot[i].inventorySlotImage.sprite = itemDetails.itemSprite;
                             inventorySlot[i].textMeshProUGUI.text = inventoryList[i].itemQuantity.ToString();

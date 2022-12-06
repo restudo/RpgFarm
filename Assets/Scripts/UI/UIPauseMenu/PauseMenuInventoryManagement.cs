@@ -20,7 +20,7 @@ public class PauseMenuInventoryManagement : MonoBehaviour
         // Populate player inventory
         if (InventoryManager.Instance != null)
         {
-            PopulatePlayerInventory(InventoryLocation.player, InventoryManager.Instance.inventoryLists[(int)InventoryLocation.player]);
+            PopulatePlayerInventory(InventoryLocation.player, InventoryManager.Instance.inventoryDictionaries[(int)InventoryLocation.player]);
         }
     }
 
@@ -43,7 +43,7 @@ public class PauseMenuInventoryManagement : MonoBehaviour
     public void DestroyCurrentlyDraggedItems()
     {
         // loop through all player inventory items
-        for (int i = 0; i < InventoryManager.Instance.inventoryLists[(int)InventoryLocation.player].Count; i++)
+        for (int i = 0; i < InventoryManager.Instance.inventoryDictionaries[(int)InventoryLocation.player].Count; i++)
         {
             if (inventoryManagementSlot[i].draggedItem != null)
             {
@@ -53,14 +53,14 @@ public class PauseMenuInventoryManagement : MonoBehaviour
         }
     }
 
-    private void PopulatePlayerInventory(InventoryLocation inventoryLocation, List<InventoryItem> playerInventoryList)
+    private void PopulatePlayerInventory(InventoryLocation inventoryLocation, Dictionary<int, InventoryItem> playerInventoryList)
     {
         if (inventoryLocation == InventoryLocation.player)
         {
             InitialiseInventoryManagementSlots();
 
             // loop through all player inventory items
-            for (int i = 0; i < InventoryManager.Instance.inventoryLists[(int)InventoryLocation.player].Count; i++)
+            for (int i = 0; i < InventoryManager.Instance.inventoryDictionaries[(int)InventoryLocation.player].Count; i++)
             {
                 // Get inventory item details
                 inventoryManagementSlot[i].itemDetails = InventoryManager.Instance.GetItemDetails(playerInventoryList[i].itemCode);

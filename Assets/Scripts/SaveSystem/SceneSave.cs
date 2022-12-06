@@ -9,6 +9,6 @@ public class SceneSave
     public Dictionary<string, int[]> intArrayDictionary;
     public List<SceneItem> listSceneItem;
     public Dictionary<string, GridPropertyDetails> gridPropertyDetailsDictionary;
-    public List<InventoryItem>[] listInvItemArray;
+    public Dictionary<int, InventoryItem>[] dictInvItemArray;
     public Dictionary<string, int> intDictionary;
 }

@@ -238,8 +238,17 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                 // get the slot number where the drag ended
                 int toSlotNumber = eventData.pointerCurrentRaycast.gameObject.GetComponent<UIInventorySlot>().slotNumber;
 
-                // Swap inventory items in inventory list
-                InventoryManager.Instance.SwapInventoryItems(InventoryLocation.player, slotNumber, toSlotNumber);
+                if (Input.GetKey(KeyCode.LeftShift))
+                {
+                    int stackSize = Mathf.RoundToInt(itemQuantity / 2);
+                    InventoryManager.Instance.SwapInventoryItems(InventoryLocation.player, slotNumber, toSlotNumber, stackSize);
+                }
+                else
+                {
+                    // Swap inventory items in inventory list
+                    InventoryManager.Instance.SwapInventoryItems(InventoryLocation.player, slotNumber, toSlotNumber);
+                }
+
 
                 // // Destroy inventory text box
                 // DestroyInventoryTextBox();
@@ -253,7 +262,7 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
             {
                 if (itemDetails.canBeDropped)
                 {
-                    // Drop a single item
+                    // quantity devided by 2
                     if (Input.GetKey(KeyCode.LeftShift))
                     {
                         int stackSize = Mathf.RoundToInt(itemQuantity / 2);
@@ -263,6 +272,7 @@ public class UIInventorySlot : MonoBehaviour, IBeginDragHandler, IDragHandler, I
                             DropSelectedItemAtMousePosition(offset);
                         }
                     }
+                    // Drop a single item
                     else if (Input.GetKey(KeyCode.LeftControl))
                     {
 

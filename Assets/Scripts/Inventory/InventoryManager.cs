@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISaveable
@@ -7,17 +8,27 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
     private bool isItemCanBeAdd = true;
     private int sumItemInInventory = 0;
 
-    private int maxStack = 3;
+    private int maxStack = 5;
 
     private Dictionary<int, ItemDetails> itemDetailsDictionary;
 
     private int[] selectedInventoryItem; // the index of the array is the inventory list, and the value is the item code
-    public List<InventoryItem>[] inventoryLists;
+    // public List<InventoryItem>[] inventoryLists;
+    public Dictionary<int, InventoryItem>[] inventoryDictionaries;
+
+    //create dict for player inv
+    private Dictionary<int, InventoryItem> playerDict = new Dictionary<int, InventoryItem>();
+    private int _playerInvIndex;
+    public int PlayerInvIndex { get => _playerInvIndex; set => _playerInvIndex = value; }
+
+    //create dict for chest inv
+    private Dictionary<int, InventoryItem> chestDict = new Dictionary<int, InventoryItem>();
 
     [HideInInspector] public int[] inventoryListCapacityIntArray;   // the index of the array is the inventory list (from the InventoryLocation enum), 
                                                                     //and the value is the capacity of that inventory list
 
     [SerializeField] private SO_ItemList itemList = null;
+
 
     private string _iSaveableUniqueID;
     public string ISaveableUniqueID { get { return _iSaveableUniqueID; } set { _iSaveableUniqueID = value; } }
@@ -71,23 +82,27 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
         // test to advance the backpack by 1
         if (Input.GetKeyDown(KeyCode.M) && inventoryListCapacityIntArray[(int)InventoryLocation.player] < Settings.playerMaximumInventoryCapacity)
         {
-            inventoryListCapacityIntArray[(int)InventoryLocation.player] += 1;
+            // Extend Player inventory by 12
+            for (int i = 0; i < 12; i++)
+            {
+                PlayerInvIndex = inventoryListCapacityIntArray[(int)InventoryLocation.player] += 1;
+                UpdateDictionaryForPlayerInventory();
+            }
         }
-        if (Input.GetKeyDown(KeyCode.N))
-        {
-            Debug.Log("inventoryListCapacityIntArray : " + inventoryListCapacityIntArray[(int)InventoryLocation.player]);
-        }
+    }
+
+    private void UpdateDictionaryForPlayerInventory()
+    {
+        InventoryItem invItem;
+        invItem.itemCode = 0;
+        invItem.itemQuantity = 0;
+        playerDict.Add(PlayerInvIndex - 1, invItem);
+
+        inventoryDictionaries[(int)InventoryLocation.player] = playerDict;
     }
 
     private void CreateInventoryLists()
     {
-        inventoryLists = new List<InventoryItem>[(int)InventoryLocation.count];
-
-        for (int i = 0; i < (int)InventoryLocation.count; i++)
-        {
-            inventoryLists[i] = new List<InventoryItem>();
-        }
-
         // initialise inventory list capacity array
         inventoryListCapacityIntArray = new int[(int)InventoryLocation.count];
 
@@ -95,7 +110,31 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
         inventoryListCapacityIntArray[(int)InventoryLocation.player] = Settings.playerInitialInventoryCapacity;
 
         // initialise chest inventory list capacity
-        // inventoryListCapacityIntArray[(int)InventoryLocation.chest] = Settings.ChestInitialInventoryCapacity;
+        inventoryListCapacityIntArray[(int)InventoryLocation.chest] = Settings.ChestInitialInventoryCapacity;
+        inventoryDictionaries = new Dictionary<int, InventoryItem>[(int)InventoryLocation.count];
+
+        // create player inventory from dictionary
+        for (PlayerInvIndex = 0; PlayerInvIndex < inventoryListCapacityIntArray[(int)InventoryLocation.player]; PlayerInvIndex++)
+        {
+            InventoryItem invItem;
+            invItem.itemCode = 0;
+            invItem.itemQuantity = 0;
+            playerDict.Add(PlayerInvIndex, invItem);
+        }
+
+        inventoryDictionaries[(int)InventoryLocation.player] = playerDict;
+
+        // Create chest inventory from dictionary
+        for (int i = 0; i < inventoryListCapacityIntArray[(int)InventoryLocation.chest]; i++)
+        {
+            InventoryItem invItem;
+            invItem.itemCode = 0;
+            invItem.itemQuantity = 0;
+            chestDict.Add(i, invItem);
+        }
+
+        inventoryDictionaries[(int)InventoryLocation.chest] = chestDict;
+
     }
 
     /// <summary>
@@ -118,7 +157,7 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
     {
         AddItem(inventoryLocation, item);
 
-        if (isItemCanBeAdd)
+        if (isItemCanBeAdd == true)
         {
             Destroy(gameObjectToDelete);
         }
@@ -130,21 +169,22 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
     public void AddItem(InventoryLocation inventoryLocation, Item item)
     {
         int itemCode = item.ItemCode;
-        List<InventoryItem> inventoryList = inventoryLists[(int)inventoryLocation];
+
+        Dictionary<int, InventoryItem> inventoryDict = inventoryDictionaries[(int)inventoryLocation];
 
         // Check if inventory already contains the item
         int itemPosition = FindItemInInventory(inventoryLocation, itemCode);
 
         if (itemPosition != -1)
         {
-            AddItemAtPosition(inventoryList, itemCode, itemPosition);
+            AddItemAtPosition(inventoryDict, itemCode, itemPosition);
             isItemCanBeAdd = true;
         }
         else
         {
             if (sumItemInInventory < inventoryListCapacityIntArray[(int)InventoryLocation.player])
             {
-                AddItemAtPosition(inventoryList, itemCode);
+                AddItemAtPosition(inventoryDict, itemCode);
                 isItemCanBeAdd = true;
             }
             else
@@ -154,7 +194,7 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
         }
 
         //  Send event that inventory has been updated
-        EventHandler.CallInventoryUpdatedEvent(inventoryLocation, inventoryLists[(int)inventoryLocation]);
+        EventHandler.CallInventoryUpdatedEvent(inventoryLocation, inventoryDictionaries[(int)inventoryLocation]);
     }
 
     /// <summary>
@@ -162,133 +202,212 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
     /// </summary>
     public void AddItem(InventoryLocation inventoryLocation, int itemCode)
     {
-        List<InventoryItem> inventoryList = inventoryLists[(int)inventoryLocation];
+        Dictionary<int, InventoryItem> inventoryDict = inventoryDictionaries[(int)inventoryLocation];
 
         // Check if inventory already contains the item
         int itemPosition = FindItemInInventory(inventoryLocation, itemCode);
 
         if (itemPosition != -1)
         {
-            AddItemAtPosition(inventoryList, itemCode, itemPosition);
+            AddItemAtPosition(inventoryDict, itemCode, itemPosition);
             isItemCanBeAdd = true;
         }
         else
         {
-            AddItemAtPosition(inventoryList, itemCode);
+            if (sumItemInInventory < inventoryListCapacityIntArray[(int)InventoryLocation.player])
+            {
+                AddItemAtPosition(inventoryDict, itemCode);
+                isItemCanBeAdd = true;
+            }
+            else
+            {
+                isItemCanBeAdd = false;
+            }
         }
 
         //  Send event that inventory has been updated
-        EventHandler.CallInventoryUpdatedEvent(inventoryLocation, inventoryLists[(int)inventoryLocation]);
+        EventHandler.CallInventoryUpdatedEvent(inventoryLocation, inventoryDictionaries[(int)inventoryLocation]);
     }
 
-
-    /// <summary>
-    /// Add item to the end of the inventory
-    /// </summary>
-    private void AddItemAtPosition(List<InventoryItem> inventoryList, int itemCode)
+    private int GetFirstEmptyItemSlot(Dictionary<int, InventoryItem> inventoryDict)
     {
-        InventoryItem inventoryItem = new InventoryItem();
-
-        inventoryItem.itemCode = itemCode;
-        inventoryItem.itemQuantity = 1;
-        inventoryList.Add(inventoryItem);
-
-        sumItemInInventory += 1;
-        Debug.Log(sumItemInInventory);
-
-        //DebugPrintInventoryList(inventoryList);
+        foreach (KeyValuePair<int, InventoryItem> item in inventoryDict)
+        {
+            if (item.Value.itemCode == 0)
+            {
+                return item.Key;
+            }
+        }
+        return -1;
     }
 
     /// <summary>
-    /// Add item to position in the inventory
+    /// Add item at the end of the inv
     /// </summary>
-    private void AddItemAtPosition(List<InventoryItem> inventoryList, int itemCode, int position)
+    /// <param name="inventoryList"></param>
+    /// <param name="itemCode"></param>
+    private void AddItemAtPosition(Dictionary<int, InventoryItem> inventoryDict, int itemCode)
     {
         InventoryItem inventoryItem = new InventoryItem();
 
-        int quantity = inventoryList[position].itemQuantity + 1;
+        int itemSlot = GetFirstEmptyItemSlot(inventoryDict);
+        if (itemSlot != -1)
+        {
+            inventoryItem.itemCode = itemCode;
+            inventoryItem.itemQuantity = 1;
+            inventoryDict[itemSlot] = inventoryItem;
+
+            sumItemInInventory += 1;
+        }
+    }
+
+    /// <summary>
+    /// Add Quantity to item
+    /// </summary>
+    /// <param name="inventoryList"></param>
+    /// <param name="itemCode"></param>
+    /// <param name="itemPosition"></param>
+    private void AddItemAtPosition(Dictionary<int, InventoryItem> inventoryDict, int itemCode, int itemPosition)
+    {
+        InventoryItem inventoryItem = new InventoryItem();
+
+        int quantity = inventoryDict[itemPosition].itemQuantity + 1;
         inventoryItem.itemQuantity = quantity;
         inventoryItem.itemCode = itemCode;
-        inventoryList[position] = inventoryItem;
-
-
-        //DebugPrintInventoryList(inventoryList);
+        inventoryDict[itemPosition] = inventoryItem;
     }
 
-    ///<summary>
-    ///Swap item at fromItem index with item at toItem index in inventoryLocation inventory list
-    ///</summary>
-
-    public void SwapInventoryItems(InventoryLocation inventoryLocation, int fromItem, int toItem)
+    /// <summary>
+    /// Split item quantity
+    /// </summary>
+    /// <param name="inventoryLocation"></param>
+    /// <param name="fromItem"></param>
+    /// <param name="toItem"></param>
+    /// <param name="stackSize"></param>
+    public void SwapInventoryItems(InventoryLocation inventoryLocation, int fromItem, int toItem, int stackSize)
     {
-        // if fromItem index and toItemIndex are within the bounds of the list, not the same, and greater than or equal to zero
-        if (fromItem < inventoryLists[(int)inventoryLocation].Count && toItem < inventoryLists[(int)inventoryLocation].Count
-             && fromItem != toItem && fromItem >= 0 && toItem >= 0)
+        if (fromItem != toItem && fromItem >= 0)
         {
-            InventoryItem fromInventoryItem = inventoryLists[(int)inventoryLocation][fromItem];
-            InventoryItem toInventoryItem = inventoryLists[(int)inventoryLocation][toItem];
-
-            if (inventoryLists[(int)inventoryLocation][fromItem].itemCode == inventoryLists[(int)inventoryLocation][toItem].itemCode)
+            if (inventoryDictionaries[(int)inventoryLocation].ContainsKey(toItem))
             {
-                // just swap it
-                if (inventoryLists[(int)inventoryLocation][fromItem].itemQuantity >= maxStack &&
-                    inventoryLists[(int)inventoryLocation][toItem].itemQuantity >= maxStack ||
-                    inventoryLists[(int)inventoryLocation][fromItem].itemQuantity >= maxStack &&
-                    inventoryLists[(int)inventoryLocation][toItem].itemQuantity <= maxStack ||
-                    inventoryLists[(int)inventoryLocation][fromItem].itemQuantity <= maxStack &&
-                    inventoryLists[(int)inventoryLocation][toItem].itemQuantity >= maxStack)
+                InventoryItem fromInventoryItem = inventoryDictionaries[(int)inventoryLocation][fromItem];
+                InventoryItem toInventoryItem = inventoryDictionaries[(int)inventoryLocation][toItem];
+
+                if (fromInventoryItem.itemCode != toInventoryItem.itemCode && toInventoryItem.itemCode != 0)
                 {
-                    inventoryLists[(int)inventoryLocation][toItem] = fromInventoryItem;
-                    inventoryLists[(int)inventoryLocation][fromItem] = toInventoryItem;
+                    inventoryDictionaries[(int)inventoryLocation][toItem] = fromInventoryItem;
+                    inventoryDictionaries[(int)inventoryLocation][fromItem] = toInventoryItem;
                 }
 
-                // combine when the itemcode is same
-                else if (inventoryLists[(int)inventoryLocation][fromItem].itemQuantity <= maxStack &&
-                    inventoryLists[(int)inventoryLocation][toItem].itemQuantity <= maxStack ||
-                    inventoryLists[(int)inventoryLocation][fromItem].itemQuantity < inventoryLists[(int)inventoryLocation][toItem].itemQuantity ||
-                    inventoryLists[(int)inventoryLocation][toItem].itemQuantity < inventoryLists[(int)inventoryLocation][fromItem].itemQuantity)
+                toInventoryItem.itemQuantity += stackSize;
+                fromInventoryItem.itemQuantity -= stackSize;
+
+                // when drop to an empty slot
+                if (toInventoryItem.itemCode == 0)
                 {
-                    int beforeSwapToInventory = toInventoryItem.itemQuantity;
-                    int beforeSwapFromInventory = fromInventoryItem.itemQuantity;
+                    toInventoryItem.itemCode = fromInventoryItem.itemCode;
 
-                    toInventoryItem.itemQuantity += fromInventoryItem.itemQuantity;
-                    fromInventoryItem.itemQuantity -= toInventoryItem.itemQuantity;
+                    inventoryDictionaries[(int)inventoryLocation][toItem] = toInventoryItem;
+                    inventoryDictionaries[(int)inventoryLocation][fromItem] = fromInventoryItem;
+                }
 
+                // when drop to a slot with same itemcode 
+                if (inventoryDictionaries[(int)inventoryLocation][fromItem].itemCode == inventoryDictionaries[(int)inventoryLocation][toItem].itemCode)
+                {
                     if (toInventoryItem.itemQuantity > maxStack)
                     {
                         for (int i = toInventoryItem.itemQuantity; i > maxStack; i--)
                         {
                             toInventoryItem.itemQuantity -= 1;
+                            fromInventoryItem.itemQuantity += 1;
                         }
                     }
 
-                    if (fromInventoryItem.itemQuantity <= 0)
-                    {
-                        if (beforeSwapToInventory + beforeSwapFromInventory <= maxStack)
-                        {
-                            for (int i = fromInventoryItem.itemQuantity; i < 0; i++)
-                            {
-                                fromInventoryItem.itemQuantity += 1;
-                            }
-                        }
-                        else
-                        {
-                            fromInventoryItem.itemQuantity = toInventoryItem.itemQuantity - beforeSwapToInventory;
-                        }
-                    }
-                    inventoryLists[(int)inventoryLocation][toItem] = toInventoryItem;
-                    inventoryLists[(int)inventoryLocation][fromItem] = fromInventoryItem;
+                    inventoryDictionaries[(int)inventoryLocation][toItem] = toInventoryItem;
+                    inventoryDictionaries[(int)inventoryLocation][fromItem] = fromInventoryItem;
                 }
             }
-            else
-            {
-                inventoryLists[(int)inventoryLocation][toItem] = fromInventoryItem;
-                inventoryLists[(int)inventoryLocation][fromItem] = toInventoryItem;
-            }
-
-            //  Send event that inventory has been updated
-            EventHandler.CallInventoryUpdatedEvent(inventoryLocation, inventoryLists[(int)inventoryLocation]);
         }
+
+        //  Send event that inventory has been updated
+        EventHandler.CallInventoryUpdatedEvent(inventoryLocation, inventoryDictionaries[(int)inventoryLocation]);
+    }
+
+    ///<summary>
+    ///Swap item at fromItem index with item at toItem index in inventoryLocation inventory list
+    ///</summary>
+    public void SwapInventoryItems(InventoryLocation inventoryLocation, int fromItem, int toItem)
+    {
+        // if fromItem index and toItemIndex are within the bounds of the list, not the same, and greater than or equal to zero
+        if (fromItem != toItem && fromItem >= 0)
+        {
+            if (inventoryDictionaries[(int)inventoryLocation].ContainsKey(toItem))
+            {
+                InventoryItem fromInventoryItem = inventoryDictionaries[(int)inventoryLocation][fromItem];
+                InventoryItem toInventoryItem = inventoryDictionaries[(int)inventoryLocation][toItem];
+
+                if (inventoryDictionaries[(int)inventoryLocation][fromItem].itemCode == inventoryDictionaries[(int)inventoryLocation][toItem].itemCode)
+                {
+                    // just swap it
+                    if (inventoryDictionaries[(int)inventoryLocation][fromItem].itemQuantity >= maxStack &&
+                            inventoryDictionaries[(int)inventoryLocation][toItem].itemQuantity >= maxStack ||
+                            inventoryDictionaries[(int)inventoryLocation][fromItem].itemQuantity >= maxStack &&
+                            inventoryDictionaries[(int)inventoryLocation][toItem].itemQuantity <= maxStack ||
+                            inventoryDictionaries[(int)inventoryLocation][fromItem].itemQuantity <= maxStack &&
+                            inventoryDictionaries[(int)inventoryLocation][toItem].itemQuantity >= maxStack)
+                    {
+                        inventoryDictionaries[(int)inventoryLocation][toItem] = fromInventoryItem;
+                        inventoryDictionaries[(int)inventoryLocation][fromItem] = toInventoryItem;
+                    }
+
+                    // Combine when its same itemcode
+                    else if (inventoryDictionaries[(int)inventoryLocation][fromItem].itemQuantity <= maxStack &&
+                    inventoryDictionaries[(int)inventoryLocation][toItem].itemQuantity <= maxStack ||
+                    inventoryDictionaries[(int)inventoryLocation][fromItem].itemQuantity < inventoryDictionaries[(int)inventoryLocation][toItem].itemQuantity ||
+                    inventoryDictionaries[(int)inventoryLocation][toItem].itemQuantity < inventoryDictionaries[(int)inventoryLocation][fromItem].itemQuantity)
+                    {
+                        int beforeSwapToInventory = toInventoryItem.itemQuantity;
+                        int beforeSwapFromInventory = fromInventoryItem.itemQuantity;
+
+                        toInventoryItem.itemQuantity += fromInventoryItem.itemQuantity;
+                        fromInventoryItem.itemQuantity -= toInventoryItem.itemQuantity;
+
+                        if (toInventoryItem.itemQuantity > maxStack)
+                        {
+                            for (int i = toInventoryItem.itemQuantity; i > maxStack; i--)
+                            {
+                                toInventoryItem.itemQuantity -= 1;
+                            }
+                        }
+
+                        if (fromInventoryItem.itemQuantity <= 0)
+                        {
+                            if (beforeSwapToInventory + beforeSwapFromInventory <= maxStack)
+                            {
+                                for (int i = fromInventoryItem.itemQuantity; i < 0; i++)
+                                {
+                                    fromInventoryItem.itemQuantity += 1;
+                                }
+                            }
+                            else
+                            {
+                                fromInventoryItem.itemQuantity = toInventoryItem.itemQuantity - beforeSwapToInventory;
+                            }
+                        }
+                        inventoryDictionaries[(int)inventoryLocation][toItem] = toInventoryItem;
+                        inventoryDictionaries[(int)inventoryLocation][fromItem] = fromInventoryItem;
+                    }
+                }
+                // When its different itemcode just swap
+                else
+                {
+                    inventoryDictionaries[(int)inventoryLocation][toItem] = fromInventoryItem;
+                    inventoryDictionaries[(int)inventoryLocation][fromItem] = toInventoryItem;
+                }
+            }
+        }
+        //  Send event that inventory has been updated
+        EventHandler.CallInventoryUpdatedEvent(inventoryLocation, inventoryDictionaries[(int)inventoryLocation]);
     }
 
     /// <summary>
@@ -297,6 +416,32 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
     public void ClearSelectedInventoryItem(InventoryLocation inventoryLocation)
     {
         selectedInventoryItem[(int)inventoryLocation] = -1;
+    }
+
+    /// <summary>
+    /// Find if itemCode is already in the inv
+    /// Returns itemPosition in List or -1
+    /// </summary>
+    /// <param name="inventoryLocation"></param>
+    /// <param name="itemCode"></param>
+    /// <returns></returns>
+    public int FindItemInInventory(InventoryLocation inventoryLocation, int itemCode)
+    {
+        Dictionary<int, InventoryItem> inventoryDict = inventoryDictionaries[(int)inventoryLocation];
+
+        foreach (KeyValuePair<int, InventoryItem> item in inventoryDict)
+        {
+            if (item.Value.itemQuantity == maxStack)
+            {
+                continue;
+            }
+            else if (item.Value.itemCode == itemCode)
+            {
+                return item.Key;
+            }
+        }
+
+        return -1;
     }
 
     /// <summary>
@@ -385,65 +530,43 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
     }
 
     /// <summary>
-    /// Find if an itemCode is already in the inventory. Returns the item position
-    /// in the inventory list, or -1 if the item is not in the inventory
+    /// Remove item from the inventory
     /// </summary>
-    public int FindItemInInventory(InventoryLocation inventoryLocation, int itemCode)
+    /// <param name="inventoryLocation"></param>
+    /// <param name="itemCode"></param>
+    public void RemoveItem(InventoryLocation inventoryLocation, int itemCode, int itemPosition)
     {
-        List<InventoryItem> inventoryList = inventoryLists[(int)inventoryLocation];
-
-        for (int i = 0; i < inventoryList.Count; i++)
+        Dictionary<int, InventoryItem> inventoryDict = inventoryDictionaries[(int)inventoryLocation];
+        if (itemPosition != -1)
         {
-            if (inventoryList[i].itemQuantity == maxStack)
-            {
-                continue;
-            }
-            else if (inventoryList[i].itemCode == itemCode)
-            {
-                return i;
-            }
+            RemoveItemAtPosition(inventoryDict, itemCode, itemPosition);
         }
-        return -1;
+        EventHandler.CallInventoryUpdatedEvent(inventoryLocation, inventoryDictionaries[(int)inventoryLocation]);
     }
 
     /// <summary>
-    /// Remove an item from the inventory, and create a game object at the position it was dropped
+    /// Remove item at a specific position from the inventory
     /// </summary>
-    public void RemoveItem(InventoryLocation inventoryLocation, int itemCode, int itemPosition)
-    {
-        List<InventoryItem> inventoryList = inventoryLists[(int)inventoryLocation];
-
-        // Check if inventory already contains the item
-        // int itemPosition = FindItemInInventory(inventoryLocation, itemCode);
-
-        if (itemPosition != -1)
-        {
-            RemoveItemAtPosition(inventoryList, itemCode, itemPosition);
-        }
-
-        //  Send event that inventory has been updated
-        EventHandler.CallInventoryUpdatedEvent(inventoryLocation, inventoryLists[(int)inventoryLocation]);
-
-    }
-
-    private void RemoveItemAtPosition(List<InventoryItem> inventoryList, int itemCode, int position)
+    /// <param name="inventoryList"></param>
+    /// <param name="itemCode"></param>
+    /// <param name="itemPosition"></param>
+    private void RemoveItemAtPosition(Dictionary<int, InventoryItem> inventoryDict, int itemCode, int itemPosition)
     {
         InventoryItem inventoryItem = new InventoryItem();
-
-        int quantity = inventoryList[position].itemQuantity - 1;
-
+        int quantity = inventoryDict[itemPosition].itemQuantity - 1;
         if (quantity > 0)
         {
             inventoryItem.itemQuantity = quantity;
             inventoryItem.itemCode = itemCode;
-            inventoryList[position] = inventoryItem;
         }
         else
         {
-            inventoryList.RemoveAt(position);
+            inventoryItem.itemQuantity = 0;
+            inventoryItem.itemCode = 0;
             sumItemInInventory -= 1;
-            Debug.Log(sumItemInInventory);
         }
+
+        inventoryDict[itemPosition] = inventoryItem;
     }
 
     /// <summary>
@@ -453,15 +576,6 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
     {
         selectedInventoryItem[(int)inventoryLocation] = itemCode;
     }
-
-    //private void DebugPrintInventoryList(List<InventoryItem> inventoryList)
-    //{
-    //    foreach (InventoryItem inventoryItem in inventoryList)
-    //    {
-    //        Debug.Log("Item Description:" + InventoryManager.Instance.GetItemDetails(inventoryItem.itemCode).itemDescription + "    Item Quantity: " + inventoryItem.itemQuantity);
-    //    }
-    //    Debug.Log("******************************************************************************");
-    //}
 
     public void ISaveableRegister()
     {
@@ -481,8 +595,8 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
         // Remove any existing scene save for persistent scene for this gameobject
         GameObjectSave.sceneData.Remove(Settings.PersistentScene);
 
-        // Add inventory lists array to persistent scene save
-        sceneSave.listInvItemArray = inventoryLists;
+        //add inv item dicts
+        sceneSave.dictInvItemArray = inventoryDictionaries;
 
         // Add  inventory list capacity array to persistent scene save
         sceneSave.intArrayDictionary = new Dictionary<string, int[]>();
@@ -509,14 +623,14 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
             if (gameObjectSave.sceneData.TryGetValue(Settings.PersistentScene, out SceneSave sceneSave))
             {
                 // list inv items array exists for persistent scene
-                if (sceneSave.listInvItemArray != null)
+                if (sceneSave.dictInvItemArray != null)
                 {
-                    inventoryLists = sceneSave.listInvItemArray;
+                    inventoryDictionaries = sceneSave.dictInvItemArray;
 
                     //  Send events that inventory has been updated
                     for (int i = 0; i < (int)InventoryLocation.count; i++)
                     {
-                        EventHandler.CallInventoryUpdatedEvent((InventoryLocation)i, inventoryLists[i]);
+                        EventHandler.CallInventoryUpdatedEvent((InventoryLocation)i, inventoryDictionaries[i]);
                     }
 
                     // Clear any items player was carrying
