@@ -3,27 +3,34 @@ using UnityEngine.UI;
 
 public class UIManager : SingletonMonobehaviour<UIManager>
 {
-
     private bool _pauseMenuOn = false;
+    private bool _chestMenuOn = false;
     [SerializeField] private UIInventoryBar uiInventoryBar = null;
     [SerializeField] private PauseMenuInventoryManagement pauseMenuInventoryManagement = null;
     [SerializeField] private GameObject pauseMenu = null;
     [SerializeField] private GameObject[] menuTabs = null;
     [SerializeField] private Button[] menuButtons = null;
 
+    [SerializeField] private GameObject chestMenu = null;
+
+
     public bool PauseMenuOn { get => _pauseMenuOn; set => _pauseMenuOn = value; }
+    public bool ChestMenuOn { get => _chestMenuOn; set => _chestMenuOn = value; }
 
     protected override void Awake()
     {
         base.Awake();
 
         pauseMenu.SetActive(false);
+        chestMenu.SetActive(false);
     }
 
     // Update is called once per frame
     private void Update()
     {
         PauseMenu();
+
+        ChestMenu();
     }
 
     private void PauseMenu()
@@ -32,13 +39,35 @@ public class UIManager : SingletonMonobehaviour<UIManager>
 
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (PauseMenuOn)
+            if (!ChestMenuOn)
             {
-                DisablePauseMenu();
+                if (PauseMenuOn)
+                {
+                    DisablePauseMenu();
+                }
+                else
+                {
+                    EnablePauseMenu();
+                }
             }
-            else
+        }
+    }
+
+    private void ChestMenu()
+    {
+        // Open Chest
+        if (Player.Instance.IsTriggerWithChest && Input.GetKeyDown(KeyCode.E))
+        {
+            if (!PauseMenuOn)
             {
-                EnablePauseMenu();
+                if (ChestMenuOn)
+                {
+                    CLoseChest();
+                }
+                else
+                {
+                    OpenChest();
+                }
             }
         }
     }
@@ -72,6 +101,32 @@ public class UIManager : SingletonMonobehaviour<UIManager>
         Player.Instance.playerInputIsDisabled = false;
         Time.timeScale = 1;
         pauseMenu.SetActive(false);
+
+    }
+
+    private void OpenChest()
+    {
+        // Destroy any currently dragged items
+        uiInventoryBar.DestroyCurrentlyDraggedItems();
+
+        // Clear currently selected items
+        uiInventoryBar.ClearCurrentlySelectedItems();
+
+        ChestMenuOn = true;
+        Player.Instance.playerInputIsDisabled = true;
+        chestMenu.SetActive(true);
+
+    }
+
+    private void CLoseChest()
+    {
+        // TODO: change with chest inventory management
+        // Destroy any currently dragged items
+        pauseMenuInventoryManagement.DestroyCurrentlyDraggedItems();
+
+        ChestMenuOn = false;
+        Player.Instance.playerInputIsDisabled = false;
+        chestMenu.SetActive(false);
 
     }
 
@@ -129,6 +184,7 @@ public class UIManager : SingletonMonobehaviour<UIManager>
         HighlightButtonForSelectedTab();
 
     }
+
     public void QuitGame()
     {
         Application.Quit();

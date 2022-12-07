@@ -10,5 +10,6 @@
 
     public const string Bed = "Bed";
     public const string Well = "Well";
+    public const string Chest = "Chest";
 
 }

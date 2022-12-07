@@ -35,7 +35,6 @@ MonoBehaviour:
     disableCropCollidersBeforeHarvestedAnimation: 0
     isHarvestedAnimation: 1
     isHarvestActionEffect: 0
-    spawnCropProducedAtPlayerPosition: 1
     plantRequiresWaterToGrow: 1
     harvestActionEffect: 5
     harvestToolItemCode: 1c270000
@@ -43,7 +42,8 @@ MonoBehaviour:
     cropProducedItemCode: 17270000
     cropProducedMinQuantity: 01000000
     cropProducedMaxQuantity: 01000000
-    daysToRegrow: 0
+    daysToRegrow: 2
+    howMuchcanRegrow: 2
   - seedItemCode: 10000
     growthDays: 000000000a000000
     itHaveToBeWateredBetweenXDays: 0
@@ -60,7 +60,6 @@ MonoBehaviour:
     disableCropCollidersBeforeHarvestedAnimation: 0
     isHarvestedAnimation: 1
     isHarvestActionEffect: 1
-    spawnCropProducedAtPlayerPosition: 0
     plantRequiresWaterToGrow: 0
     harvestActionEffect: 0
     harvestToolItemCode: 15270000
@@ -69,6 +68,7 @@ MonoBehaviour:
     cropProducedMinQuantity: 0200000001000000
     cropProducedMaxQuantity: 0500000002000000
     daysToRegrow: 0
+    howMuchcanRegrow: 0
   - seedItemCode: 10010
     growthDays: 00000000
     itHaveToBeWateredBetweenXDays: 0
@@ -83,7 +83,6 @@ MonoBehaviour:
     disableCropCollidersBeforeHarvestedAnimation: 0
     isHarvestedAnimation: 1
     isHarvestActionEffect: 1
-    spawnCropProducedAtPlayerPosition: 0
     plantRequiresWaterToGrow: 0
     harvestActionEffect: 2
     harvestToolItemCode: 15270000
@@ -92,6 +91,7 @@ MonoBehaviour:
     cropProducedMinQuantity: 02000000
     cropProducedMaxQuantity: 05000000
     daysToRegrow: 0
+    howMuchcanRegrow: 0
   - seedItemCode: 10014
     growthDays: 00000000
     itHaveToBeWateredBetweenXDays: 0
@@ -106,7 +106,6 @@ MonoBehaviour:
     disableCropCollidersBeforeHarvestedAnimation: 1
     isHarvestedAnimation: 1
     isHarvestActionEffect: 1
-    spawnCropProducedAtPlayerPosition: 1
     plantRequiresWaterToGrow: 0
     harvestActionEffect: 3
     harvestToolItemCode: 1d270000
@@ -115,6 +114,7 @@ MonoBehaviour:
     cropProducedMinQuantity: 01000000
     cropProducedMaxQuantity: 01000000
     daysToRegrow: 0
+    howMuchcanRegrow: 0
   - seedItemCode: 10016
     growthDays: 00000000
     itHaveToBeWateredBetweenXDays: 0
@@ -129,7 +129,6 @@ MonoBehaviour:
     disableCropCollidersBeforeHarvestedAnimation: 0
     isHarvestedAnimation: 1
     isHarvestActionEffect: 1
-    spawnCropProducedAtPlayerPosition: 0
     plantRequiresWaterToGrow: 0
     harvestActionEffect: 3
     harvestToolItemCode: 1d270000
@@ -138,3 +137,4 @@ MonoBehaviour:
     cropProducedMinQuantity: 01000000
     cropProducedMaxQuantity: 03000000
     daysToRegrow: 0
+    howMuchcanRegrow: 0

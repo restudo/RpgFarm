@@ -15,6 +15,7 @@ public class GridPropertyDetails
     public int growthDays = -1;
     public int daysSinceLastHarvest = -1;
     public int daysBetweenWatered = -1;
+    public int howMuchcanRegrow = 0; // if days to regrow != 0 --- how much days this crop can regrow until die
 
     public GridPropertyDetails()
     {

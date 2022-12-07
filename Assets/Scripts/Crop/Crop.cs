@@ -91,11 +91,23 @@ public class Crop : MonoBehaviour
             }
         }
 
-        // Delete crop from grid properties
-        gridPropertyDetails.seedItemCode = -1;
-        gridPropertyDetails.growthDays = -1;
-        gridPropertyDetails.daysSinceLastHarvest = -1;
-        gridPropertyDetails.daysSinceWatered = -1;
+        // if this crop can multiple harvest
+        if (gridPropertyDetails.howMuchcanRegrow < cropDetails.howMuchcanRegrow - 1)
+        {
+            gridPropertyDetails.growthDays -= cropDetails.daysToRegrow;
+            gridPropertyDetails.howMuchcanRegrow += 1;
+            GridPropertiesManager.Instance.DisplayPlantedCrop(gridPropertyDetails);
+        }
+        // if not
+        else
+        {
+            // Delete crop from grid properties
+            gridPropertyDetails.seedItemCode = -1;
+            gridPropertyDetails.growthDays = -1;
+            gridPropertyDetails.daysSinceLastHarvest = -1;
+            gridPropertyDetails.daysSinceWatered = -1;
+            gridPropertyDetails.howMuchcanRegrow = 0;
+        }
 
         // Should the crop be hidden before the harvested animation
         if (cropDetails.hideCropBeforeHarvestedAnimation)
@@ -149,6 +161,7 @@ public class Crop : MonoBehaviour
         }
 
         Destroy(gameObject);
+
     }
 
     private void SpawnHarvestedItems(CropDetails cropDetails)
@@ -171,18 +184,9 @@ public class Crop : MonoBehaviour
 
             for (int j = 0; j < cropsToProduce; j++)
             {
-                Vector3 spawnPosition;
-                if (cropDetails.spawnCropProducedAtPlayerPosition)
-                {
-                    //  Add item to the players inventory
-                    InventoryManager.Instance.AddItem(InventoryLocation.player, cropDetails.cropProducedItemCode[i]);
-                }
-                else
-                {
-                    // Random position
-                    spawnPosition = new Vector3(transform.position.x + Random.Range(-1f, 1f), transform.position.y + Random.Range(-1f, 1f), 0f);
-                    SceneItemsManager.Instance.InstantiateSceneItem(cropDetails.cropProducedItemCode[i], spawnPosition);
-                }
+                // Spawn harvested crop at Random position
+                Vector3 spawnPosition = new Vector3(transform.position.x + Random.Range(-1f, 1f), transform.position.y + Random.Range(-1f, 1f), 0f);
+                SceneItemsManager.Instance.InstantiateSceneItem(cropDetails.cropProducedItemCode[i], spawnPosition);
             }
         }
     }

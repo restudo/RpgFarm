@@ -15,6 +15,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
     private WaitForSeconds pickAnimationPause;
     private WaitForSeconds afterPickAnimationPause;
 
+    private UIInventorySlot uIInventorySlot;
     private GridCursor gridCursor;
     private Cursor cursor;
     private Vector3 offset = new Vector3(0, 0, 0);
@@ -42,6 +43,10 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
     private int isWalking;
     private int isUsingHoe;
     private int isStaminaZero;
+
+    // Chest
+    private bool _isTriggerWithChest = false;
+    public bool IsTriggerWithChest { get => _isTriggerWithChest; set => _isTriggerWithChest = value; }
 
     // camera
     private Camera mainCamera;
@@ -105,6 +110,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
         gridCursor = FindObjectOfType<GridCursor>();
         cursor = FindObjectOfType<Cursor>();
+        uIInventorySlot = FindObjectOfType<UIInventorySlot>();
 
         useToolAnimationPause = new WaitForSeconds(Settings.useToolAnimationPause);
         afterUseToolAnimationPause = new WaitForSeconds(Settings.afterUseToolAnimationPause);
@@ -222,10 +228,10 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 // Get Selected item details
                 ItemDetails itemDetails = InventoryManager.Instance.GetSelectedInventoryItemDetails(InventoryLocation.player);
-                if (itemDetails.itemType == ItemType.Watering_tool)
+
+                if (itemDetails != null && itemDetails.itemType == ItemType.Watering_tool)
                 {
                     WaterQuantity = 50;
-                    Debug.Log(WaterQuantity);
                 }
             }
         }
@@ -714,8 +720,6 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
         // TODO: Change the animation to Watering animation
         anim.SetBool(isUsingHoe, false);
 
-        Debug.Log(WaterQuantity);
-
         playerInputIsDisabled = false;
         playerToolUseDisabled = false;
     }
@@ -1123,6 +1127,10 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 isFillWater = true;
                 break;
 
+            case Tags.Chest:
+                IsTriggerWithChest = true;
+                break;
+
             default:
                 break;
         }
@@ -1138,6 +1146,10 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
             case Tags.Well:
                 isFillWater = false;
+                break;
+
+            case Tags.Chest:
+                IsTriggerWithChest = false;
                 break;
 
             default:

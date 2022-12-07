@@ -17,7 +17,6 @@ public class CropDetails
     public bool disableCropCollidersBeforeHarvestedAnimation;// if colliders on crop should be disabled to avoid the harvested animation effecting any other game objects
     public bool isHarvestedAnimation; // true if harvested animation to be played on final growth stage prefab
     public bool isHarvestActionEffect = false; // flag to determine whether there is a harvest action effect
-    public bool spawnCropProducedAtPlayerPosition;
     public bool plantRequiresWaterToGrow;
     public HarvestActionEffect harvestActionEffect; // the harvest action effect for the crop
 
@@ -28,7 +27,8 @@ public class CropDetails
     public int[] cropProducedItemCode; // array of item codes produced for the harvested crop
     public int[] cropProducedMinQuantity; // array of minimum quantities produced for the harvested crop
     public int[] cropProducedMaxQuantity; // if max quantity is > min quantity then a random number of crops between min and max are produced
-    public int daysToRegrow; // days to regrow next crop or -1 if a single crop
+    public int daysToRegrow; // days to regrow next crop or 0 if a single crop
+    public int howMuchcanRegrow; // if days to regrow != 0 --- how much days this crop can regrow until die
 
 
     /// <summary>

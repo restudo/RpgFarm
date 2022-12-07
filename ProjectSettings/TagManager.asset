@@ -11,6 +11,7 @@ TagManager:
   - CropsParentTransform
   - Bed
   - Well
+  - Chest
   layers:
   - Default
   - TransparentFX

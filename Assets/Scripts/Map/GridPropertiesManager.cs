@@ -453,6 +453,8 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
 
                         Destroy(crop.gameObject);
                     }
+
+
                 }
             }
         }
