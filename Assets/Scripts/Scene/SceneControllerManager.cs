@@ -8,6 +8,7 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
 {
     private bool isFading;
     [SerializeField] private float fadeDuration = 1f;
+    [SerializeField] private float fadeDurationWhenSleeping = 1f;
     [SerializeField] private CanvasGroup faderCanvasGroup = null;
     [SerializeField] private Image faderImage = null;
     public SceneName startingSceneName;
@@ -21,8 +22,16 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
         // Make sure the CanvasGroup blocks raycasts into the scene so no more input can be accepted.
         faderCanvasGroup.blocksRaycasts = true;
 
-        // Calculate how fast the CanvasGroup should fade based on it's current alpha, it's final alpha and how long it has to change between the two.
-        float fadeSpeed = Mathf.Abs(faderCanvasGroup.alpha - finalAlpha) / fadeDuration;
+        float fadeSpeed = 0;
+        if (!Player.Instance.playerIsOnTheBed)
+        {
+            // Calculate how fast the CanvasGroup should fade based on it's current alpha, it's final alpha and how long it has to change between the two.
+            fadeSpeed = Mathf.Abs(faderCanvasGroup.alpha - finalAlpha) / fadeDuration;
+        }
+        else
+        {
+            fadeSpeed = Mathf.Abs(faderCanvasGroup.alpha - finalAlpha) / fadeDurationWhenSleeping;
+        }
 
         // While the CanvasGroup hasn't reached the final alpha yet...
         while (!Mathf.Approximately(faderCanvasGroup.alpha, finalAlpha))

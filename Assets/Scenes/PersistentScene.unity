@@ -3199,7 +3199,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 243045073}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.948, y: -0.192, z: -10}
+  m_LocalPosition: {x: 2.5, y: 0.07, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -5331,7 +5331,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.948, y: -0.192, z: -10}
+  m_LocalPosition: {x: 2.5, y: 0.07, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -5504,6 +5504,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   fadeDuration: 0.7
+  fadeDurationWhenSleeping: 2.4
   faderCanvasGroup: {fileID: 408894055}
   faderImage: {fileID: 408894052}
   startingSceneName: 0
@@ -24517,7 +24518,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2188209232332271841}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.948, y: -0.192, z: 0}
+  m_LocalPosition: {x: 2.5, y: 0.07, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -24547,10 +24548,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ce8aa14e2e5feb24f98ccec04d326eef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  instantiateCrop: 1
+  playerIsOnTheBed: 0
   moveSpeed: 5
   _stamina: 100
+  scenePositionGoto: {x: 2.5, y: 0.1, z: 0}
   _waterQuantity: 50
-  so_CropDetailsList: {fileID: 0}
 --- !u!212 &3498977573899059900
 SpriteRenderer:
   m_ObjectHideFlags: 0

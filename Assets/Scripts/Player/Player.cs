@@ -24,7 +24,8 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
     private bool isUsingToolRight = false;
     private bool isPickingRight = false;
 
-    private bool playerIsOnTheBed = false;
+    [HideInInspector] public bool instantiateCrop = true;
+    [HideInInspector] public bool playerIsOnTheBed = false;
     private bool facingRight;
     private Animator anim;
     private Rigidbody2D rb;
@@ -54,8 +55,10 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
     [Header("MoveController")]
     [SerializeField] private float moveSpeed;
 
-    [Header("Stamina")]
+    [Header("Stamina & Sleep")]
     [SerializeField] private int _stamina = 100;
+    [SerializeField] private Vector3 scenePositionGoto = new Vector3();
+    private SceneName sceneNameGoto = SceneName.Scene3_Cabin;
     public int Stamina { get => _stamina; set => _stamina = value; }
     private int defaultStamina;
     public int DefaultStamina { get => defaultStamina; set => defaultStamina = value; }
@@ -64,9 +67,6 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
     [SerializeField] private int _waterQuantity = 50;
     public int WaterQuantity { get => _waterQuantity; set => _waterQuantity = value; }
     private bool isFillWater = false;
-
-    [Header("SO_CropDetails")]
-    [SerializeField] private SO_CropDetailsList so_CropDetailsList;
 
     protected override void Awake()
     {
@@ -193,35 +193,10 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 }
             }
 
-            // Trigger sleep
+            // // Trigger sleep
             if (playerIsOnTheBed && Input.GetKeyDown(KeyCode.E))
             {
-                if (TimeManager.Instance.GameHour >= 0 && TimeManager.Instance.GameHour <= 4 && Stamina <= 10)
-                {
-                    // set Default stamina to 70 because of penalty
-                    DefaultStamina = Settings.playerMaxPenaltyStamina;
-                    // set stamina to 50 because of penalty
-                    Stamina = Settings.playerInitialPenaltyStamina;
-
-                    TimeManager.Instance.TestAdvancePenaltyGameDay();
-                }
-                else if (TimeManager.Instance.GameHour >= 0 && TimeManager.Instance.GameHour <= 4 && Stamina > 10)
-                {
-                    // set stamina back to default
-                    DefaultStamina = Settings.playerInitialDefaultStamina;
-                    Stamina = DefaultStamina;
-
-                    // set time to penalty at 8 oclock
-                    TimeManager.Instance.TestAdvanceNormalPenaltyGameDay();
-                }
-                else
-                {
-                    // set stamina back to default
-                    DefaultStamina = Settings.playerInitialDefaultStamina;
-                    Stamina = DefaultStamina;
-
-                    TimeManager.Instance.TestAdvanceNormalGameDay();
-                }
+                PlayerSleep();
             }
 
             if (isFillWater && Input.GetKeyDown(KeyCode.E))
@@ -286,6 +261,57 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
         {
             EventHandler.CallInventorySlotSelectedKeyboardEvent(int.Parse(numSelected));
         }
+    }
+
+    public void PlayerSleep()
+    {
+        playerInputIsDisabled = true;
+        instantiateCrop = false;
+
+        //  Calculate players new position
+        float xPosition = Mathf.Approximately(scenePositionGoto.x, 0f) ? gameObject.transform.position.x : scenePositionGoto.x;
+        float yPosition = Mathf.Approximately(scenePositionGoto.y, 0f) ? gameObject.transform.position.y : scenePositionGoto.y;
+        float zPosition = 0f;
+
+        // Teleport to new scene
+        SceneControllerManager.Instance.FadeAndLoadScene(sceneNameGoto.ToString(), new Vector3(xPosition, yPosition, zPosition));
+
+        if (TimeManager.Instance.GameHour >= 0 && TimeManager.Instance.GameHour <= 4 && Stamina <= 10)
+        {
+            // set Default stamina to 70 because of penalty
+            DefaultStamina = Settings.playerMaxPenaltyStamina;
+            // set stamina to 50 because of penalty
+            Stamina = Settings.playerInitialPenaltyStamina;
+
+            TimeManager.Instance.TestAdvancePenaltyGameDay();
+        }
+        else if (TimeManager.Instance.GameHour >= 0 && TimeManager.Instance.GameHour <= 4 && Stamina > 10)
+        {
+            // set stamina back to default
+            DefaultStamina = Settings.playerInitialDefaultStamina;
+            Stamina = DefaultStamina;
+
+            // set time to penalty at 8 oclock
+            TimeManager.Instance.TestAdvanceNormalPenaltyGameDay();
+        }
+        else
+        {
+            // set stamina back to default
+            DefaultStamina = Settings.playerInitialDefaultStamina;
+            Stamina = DefaultStamina;
+
+            TimeManager.Instance.TestAdvanceNormalGameDay();
+        }
+
+        EventHandler.CallAdvanceGameDayEvent(TimeManager.Instance.GameYear, TimeManager.Instance.GameSeason, TimeManager.Instance.GameDay, TimeManager.Instance.GameDayOfWeek, TimeManager.Instance.GameHour, TimeManager.Instance.GameMinute, TimeManager.Instance.GameSecond);
+
+        playerIsOnTheBed = false;
+
+        if (TimeManager.Instance.GameDay == 10 || TimeManager.Instance.GameDay == 20 || TimeManager.Instance.GameDay == 30)
+        {
+            instantiateCrop = true;
+        }
+        playerInputIsDisabled = false;
     }
 
     private void ProcessPlayerClickInput(Vector3Int cursorGridPosition, Vector3Int playerGridPosition)

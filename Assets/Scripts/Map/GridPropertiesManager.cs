@@ -11,6 +11,7 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
     private Tilemap groundDecoration1;
     private Tilemap groundDecoration2;
     private bool isFirstTimeSceneLoaded = true;
+
     private Grid grid;
     private Crop crop;
     private Dictionary<string, GridPropertyDetails> gridPropertyDictionary;
@@ -653,9 +654,11 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
             }
 
             // Instantiate any crop prefabs initially present in the scene
-            if (isFirstTimeSceneLoaded)
+            if (isFirstTimeSceneLoaded && Player.Instance.instantiateCrop)
+            {
                 EventHandler.CallInstantiateCropPrefabsEvent();
-
+                Debug.Log("instantiated");
+            }
 
             // If grid properties exist
             if (gridPropertyDictionary.Count > 0)
@@ -673,7 +676,8 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
                 isFirstTimeSceneLoaded = false;
                 return;
             }
-            else if (TimeManager.Instance.GameDay == 10 || TimeManager.Instance.GameDay == 20 || TimeManager.Instance.GameDay == 30)
+
+            if (isFirstTimeSceneLoaded == false && TimeManager.Instance.GameDay == 10 || TimeManager.Instance.GameDay == 20 || TimeManager.Instance.GameDay == 30)
             {
                 isFirstTimeSceneLoaded = true;
             }

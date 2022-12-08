@@ -5,15 +5,20 @@ using UnityEngine;
 public class TimeManager : SingletonMonobehaviour<TimeManager>, ISaveable
 {
     private int gameYear = 1;
+    public int GameYear { get => gameYear; }
     private Season gameSeason = Season.Kemarau;
+    public Season GameSeason { get => gameSeason; }
     private int gameDay = 1;
-    public int GameDay { get => gameDay; set => gameDay = value; }
+    public int GameDay { get => gameDay; }
     private int gameDayUnreset = 1;
     private int gameHour = 6;
-    public int GameHour { get => gameHour; set => gameHour = value; }
+    public int GameHour { get => gameHour; }
     private int gameMinute = 30;
+    public int GameMinute { get => gameMinute; }
     private int gameSecond = 0;
+    public int GameSecond { get => gameSecond; }
     private string gameDayOfWeek = "Senin";
+    public string GameDayOfWeek { get => gameDayOfWeek; }
 
     private bool gameClockPaused = false;
 
@@ -70,6 +75,11 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>, ISaveable
         {
             GameTick();
         }
+
+        if (gameHour == 4)
+        {
+            OverSlept();
+        }
     }
 
     private void GameTick()
@@ -82,6 +92,11 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>, ISaveable
 
             UpdateGameSecond();
         }
+    }
+
+    private void OverSlept()
+    {
+        Player.Instance.PlayerSleep();
     }
 
     private void UpdateGameSecond()
@@ -131,7 +146,7 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>, ISaveable
                     }
 
                     gameDayOfWeek = GetDayOfWeek();
-                    EventHandler.CallAdvanceGameDayEvent(gameYear, gameSeason, gameDay, gameDayOfWeek, gameHour, gameMinute, gameSecond);
+
                 }
 
                 EventHandler.CallAdvanceGameHourEvent(gameYear, gameSeason, gameDay, gameDayOfWeek, gameHour, gameMinute, gameSecond);
