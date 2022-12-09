@@ -43,7 +43,13 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
     // animation
     private int isWalking;
     private int isUsingHoe;
+    private int isUsingAxe;
+    private int isUsingPickaxe;
+    private int isUsingScythe;
+    private int isUsingWateringCan;
+    private int isHarvesting;
     private int isStaminaZero;
+
 
     // camera
     private Camera mainCamera;
@@ -99,6 +105,11 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
         isWalking = Animator.StringToHash("isWalking");
         isUsingHoe = Animator.StringToHash("isUsingHoe");
+        isUsingAxe = Animator.StringToHash("isUsingAxe");
+        isUsingPickaxe = Animator.StringToHash("isUsingPickaxe");
+        isHarvesting = Animator.StringToHash("isHarvesting");
+        isUsingScythe = Animator.StringToHash("isUsingScythe");
+        isUsingWateringCan = Animator.StringToHash("isUsingWateringCan");
         isStaminaZero = Animator.StringToHash("isStaminaZero");
 
         anim = GetComponent<Animator>();
@@ -703,7 +714,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 Flip();
             }
-            anim.SetBool(isUsingHoe, true);
+            anim.SetBool(isUsingWateringCan, true);
         }
         else if (playerDirection == Vector3Int.left)
         {
@@ -711,7 +722,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 Flip();
             }
-            anim.SetBool(isUsingHoe, true);
+            anim.SetBool(isUsingWateringCan, true);
         }
 
         yield return liftToolAnimationPause;
@@ -740,7 +751,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
         yield return afterLiftToolAnimationPause;
 
         // TODO: Change the animation to Watering animation
-        anim.SetBool(isUsingHoe, false);
+        anim.SetBool(isUsingWateringCan, false);
 
         playerInputIsDisabled = false;
         playerToolUseDisabled = false;
@@ -761,11 +772,8 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
         yield return useToolAnimationPause;
 
-        // After animation pause
-        yield return afterUseToolAnimationPause;
-
         // TODO: Change the animation to Chopping animation
-        anim.SetBool(isUsingHoe, false);
+        anim.SetBool(isUsingAxe, false);
 
         playerInputIsDisabled = false;
         playerToolUseDisabled = false;
@@ -787,11 +795,8 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
         yield return pickAnimationPause;
 
-        // After animation pause
-        yield return afterPickAnimationPause;
-
         // TODO: Change the animation to Collecting animation
-        anim.SetBool(isUsingHoe, false);
+        anim.SetBool(isHarvesting, false);
 
         playerInputIsDisabled = false;
         playerToolUseDisabled = false;
@@ -812,11 +817,8 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
         yield return useToolAnimationPause;
 
-        // After animation pause
-        yield return afterUseToolAnimationPause;
-
         // TODO: Change the animation to Breaking animation
-        anim.SetBool(isUsingHoe, false);
+        anim.SetBool(isUsingPickaxe, false);
 
         playerInputIsDisabled = false;
         playerToolUseDisabled = false;
@@ -837,8 +839,10 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
         yield return useToolAnimationPause;
 
+        yield return afterPickAnimationPause;
+
         // TODO: Change the animation to Reaping animation
-        anim.SetBool(isUsingHoe, false);
+        anim.SetBool(isUsingScythe, false);
 
         playerInputIsDisabled = false;
         playerToolUseDisabled = false;
@@ -858,7 +862,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                         {
                             Flip();
                         }
-                        anim.SetBool(isUsingHoe, true);
+                        anim.SetBool(isUsingScythe, true);
                     }
                     else if (playerDirection == Vector3Int.left)
                     {
@@ -866,7 +870,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                         {
                             Flip();
                         }
-                        anim.SetBool(isUsingHoe, true);
+                        anim.SetBool(isUsingScythe, true);
                     }
                     break;
             }
@@ -924,7 +928,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                     {
                         Flip();
                     }
-                    anim.SetBool(isUsingHoe, true);
+                    anim.SetBool(isUsingPickaxe, true);
                 }
                 else if (playerDirection == Vector3Int.left)
                 {
@@ -934,7 +938,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                     {
                         Flip();
                     }
-                    anim.SetBool(isUsingHoe, true);
+                    anim.SetBool(isUsingPickaxe, true);
                 }
                 break;
 
@@ -948,7 +952,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                     {
                         Flip();
                     }
-                    anim.SetBool(isUsingHoe, true);
+                    anim.SetBool(isUsingAxe, true);
                 }
                 else if (playerDirection == Vector3Int.left)
                 {
@@ -958,7 +962,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                     {
                         Flip();
                     }
-                    anim.SetBool(isUsingHoe, true);
+                    anim.SetBool(isUsingAxe, true);
                 }
                 break;
 
@@ -972,7 +976,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                     {
                         Flip();
                     }
-                    anim.SetBool(isUsingHoe, true);
+                    anim.SetBool(isHarvesting, true);
                 }
                 else if (playerDirection == Vector3Int.left)
                 {
@@ -982,7 +986,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                     {
                         Flip();
                     }
-                    anim.SetBool(isUsingHoe, true);
+                    anim.SetBool(isHarvesting, true);
                 }
                 break;
 
