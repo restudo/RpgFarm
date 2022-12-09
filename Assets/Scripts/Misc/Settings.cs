@@ -28,8 +28,8 @@ public static class Settings
 
     // player
     public static float playerCentreYOffset = 0.875f;
-    public static float useToolAnimationPause = 0.25f;
-    public static float afterUseToolAnimationPause = 0.2f;
+    public static float useToolAnimationPause = 0.5f;
+    public static float afterUseToolAnimationPause = 0.5f;
     public static float liftToolAnimationPause = 0.4f;
     public static float afterLiftToolAnimationPause = 0.4f;
     public static float pickAnimationPause = 1f;

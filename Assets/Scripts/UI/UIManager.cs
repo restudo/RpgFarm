@@ -11,8 +11,6 @@ public class UIManager : SingletonMonobehaviour<UIManager>
     [SerializeField] private GameObject[] menuTabs = null;
     [SerializeField] private Button[] menuButtons = null;
 
-    [SerializeField] private GameObject chestMenu = null;
-
 
     public bool PauseMenuOn { get => _pauseMenuOn; set => _pauseMenuOn = value; }
     public bool ChestMenuOn { get => _chestMenuOn; set => _chestMenuOn = value; }
@@ -22,15 +20,12 @@ public class UIManager : SingletonMonobehaviour<UIManager>
         base.Awake();
 
         pauseMenu.SetActive(false);
-        chestMenu.SetActive(false);
     }
 
     // Update is called once per frame
     private void Update()
     {
         PauseMenu();
-
-        ChestMenu();
     }
 
     private void PauseMenu()
@@ -48,25 +43,6 @@ public class UIManager : SingletonMonobehaviour<UIManager>
                 else
                 {
                     EnablePauseMenu();
-                }
-            }
-        }
-    }
-
-    private void ChestMenu()
-    {
-        // Open Chest
-        if (Player.Instance.IsTriggerWithChest && Input.GetKeyDown(KeyCode.E))
-        {
-            if (!PauseMenuOn)
-            {
-                if (ChestMenuOn)
-                {
-                    CLoseChest();
-                }
-                else
-                {
-                    OpenChest();
                 }
             }
         }
@@ -101,32 +77,6 @@ public class UIManager : SingletonMonobehaviour<UIManager>
         Player.Instance.playerInputIsDisabled = false;
         Time.timeScale = 1;
         pauseMenu.SetActive(false);
-
-    }
-
-    private void OpenChest()
-    {
-        // Destroy any currently dragged items
-        uiInventoryBar.DestroyCurrentlyDraggedItems();
-
-        // Clear currently selected items
-        uiInventoryBar.ClearCurrentlySelectedItems();
-
-        ChestMenuOn = true;
-        Player.Instance.playerInputIsDisabled = true;
-        chestMenu.SetActive(true);
-
-    }
-
-    private void CLoseChest()
-    {
-        // TODO: change with chest inventory management
-        // Destroy any currently dragged items
-        pauseMenuInventoryManagement.DestroyCurrentlyDraggedItems();
-
-        ChestMenuOn = false;
-        Player.Instance.playerInputIsDisabled = false;
-        chestMenu.SetActive(false);
 
     }
 

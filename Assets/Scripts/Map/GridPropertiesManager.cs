@@ -657,7 +657,6 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
             if (isFirstTimeSceneLoaded && Player.Instance.instantiateCrop)
             {
                 EventHandler.CallInstantiateCropPrefabsEvent();
-                Debug.Log("instantiated");
             }
 
             // If grid properties exist

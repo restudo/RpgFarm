@@ -11,6 +11,7 @@ public class PauseMenuInventoryManagementSlot : MonoBehaviour, IBeginDragHandler
     [SerializeField] private PauseMenuInventoryManagement inventoryManagement = null;
     // [SerializeField] private GameObject inventoryTextBoxPrefab = null;
 
+
     [HideInInspector] public ItemDetails itemDetails;
     [HideInInspector] public int itemQuantity;
     [SerializeField] private int slotNumber = 0;

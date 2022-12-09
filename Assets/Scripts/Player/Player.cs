@@ -45,10 +45,6 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
     private int isUsingHoe;
     private int isStaminaZero;
 
-    // Chest
-    private bool _isTriggerWithChest = false;
-    public bool IsTriggerWithChest { get => _isTriggerWithChest; set => _isTriggerWithChest = value; }
-
     // camera
     private Camera mainCamera;
 
@@ -1153,10 +1149,6 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 isFillWater = true;
                 break;
 
-            case Tags.Chest:
-                IsTriggerWithChest = true;
-                break;
-
             default:
                 break;
         }
@@ -1172,10 +1164,6 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
             case Tags.Well:
                 isFillWater = false;
-                break;
-
-            case Tags.Chest:
-                IsTriggerWithChest = false;
                 break;
 
             default:
