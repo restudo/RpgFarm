@@ -1,0 +1,1 @@
+UI is designed for Samsung Galaxy 1080x2400 resolution.
