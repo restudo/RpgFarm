@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using PixelCrushers.DialogueSystem;
 
 public class Player : SingletonMonobehaviour<Player>, ISaveable
 {
@@ -86,6 +87,9 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
         EventHandler.BeforeSceneUnloadFadeOutEvent -= DisablePlayerInputAndResetMovement;
         EventHandler.AfterSceneLoadFadeInEvent -= EnablePlayerInput;
+        Lua.UnregisterFunction("PlayerSleep");
+        Lua.UnregisterFunction("DisablePlayerInput");
+        Lua.UnregisterFunction("EnablePlayerInput");
     }
 
 
@@ -95,6 +99,9 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
         EventHandler.BeforeSceneUnloadFadeOutEvent += DisablePlayerInputAndResetMovement;
         EventHandler.AfterSceneLoadFadeInEvent += EnablePlayerInput;
+        Lua.RegisterFunction("PlayerSleep", this, SymbolExtensions.GetMethodInfo(() => PlayerSleep()));
+        Lua.RegisterFunction("DisablePlayerInput", this, SymbolExtensions.GetMethodInfo(() => DisablePlayerInput()));
+        Lua.RegisterFunction("EnablePlayerInput", this, SymbolExtensions.GetMethodInfo(() => EnablePlayerInput()));
     }
 
     void Start()
@@ -201,10 +208,10 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             }
 
             // // Trigger sleep
-            if (playerIsOnTheBed && Input.GetKeyDown(KeyCode.E))
-            {
-                PlayerSleep();
-            }
+            // if (playerIsOnTheBed && Input.GetKeyDown(KeyCode.E))
+            // {
+            //     PlayerSleep();
+            // }
 
             if (isFillWater && Input.GetKeyDown(KeyCode.E))
             {

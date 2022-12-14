@@ -64,6 +64,16 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>, ISaveable
         gameClockPaused = false;
     }
 
+    public void GameClockPause()
+    {
+        gameClockPaused = true;
+    }
+
+    public void GameClockResume()
+    {
+        gameClockPaused = false;
+    }
+
     private void Start()
     {
         EventHandler.CallAdvanceGameMinuteEvent(gameYear, gameSeason, gameDay, gameDayOfWeek, gameHour, gameMinute, gameSecond);
