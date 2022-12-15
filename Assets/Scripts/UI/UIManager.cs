@@ -3,6 +3,7 @@ using UnityEngine.UI;
 
 public class UIManager : SingletonMonobehaviour<UIManager>
 {
+    private bool disableInput = false;
     private bool _pauseMenuOn = false;
     private bool _chestMenuOn = false;
     [SerializeField] private UIInventoryBar uiInventoryBar = null;
@@ -10,6 +11,8 @@ public class UIManager : SingletonMonobehaviour<UIManager>
     [SerializeField] private GameObject pauseMenu = null;
     [SerializeField] private GameObject[] menuTabs = null;
     [SerializeField] private Button[] menuButtons = null;
+
+    [SerializeField] private GameObject sleepUI = null;
 
 
     public bool PauseMenuOn { get => _pauseMenuOn; set => _pauseMenuOn = value; }
@@ -20,6 +23,7 @@ public class UIManager : SingletonMonobehaviour<UIManager>
         base.Awake();
 
         pauseMenu.SetActive(false);
+        sleepUI.SetActive(false);
     }
 
     // Update is called once per frame
@@ -32,7 +36,7 @@ public class UIManager : SingletonMonobehaviour<UIManager>
     {
         // Toggle pause menu if escape is pressed
 
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Input.GetKeyDown(KeyCode.Escape) && !disableInput)
         {
             if (!ChestMenuOn)
             {
@@ -134,6 +138,29 @@ public class UIManager : SingletonMonobehaviour<UIManager>
         HighlightButtonForSelectedTab();
 
     }
+
+    public void OpenSleepUI()
+    {
+        Player.Instance.playerInputIsDisabled = true;
+        disableInput = true;
+        sleepUI.SetActive(true);
+    }
+
+    public void Sleep()
+    {
+        Player.Instance.playerInputIsDisabled = true;
+        Player.Instance.PlayerSleep();
+        disableInput = false;
+        sleepUI.SetActive(false);
+    }
+
+    public void CloseSleepUI()
+    {
+        Player.Instance.playerInputIsDisabled = false;
+        disableInput = false;
+        sleepUI.SetActive(false);
+    }
+
 
     public void QuitGame()
     {

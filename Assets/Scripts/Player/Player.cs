@@ -59,7 +59,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
     [SerializeField] private float moveSpeed;
 
     [Header("Stamina & Sleep")]
-    [SerializeField] private int _stamina = 100;
+    public int _stamina = 100;
     [SerializeField] private Vector3 scenePositionGoto = new Vector3();
     private SceneName sceneNameGoto = SceneName.Scene3_Cabin;
     public int Stamina { get => _stamina; set => _stamina = value; }
@@ -87,7 +87,6 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
         EventHandler.BeforeSceneUnloadFadeOutEvent -= DisablePlayerInputAndResetMovement;
         EventHandler.AfterSceneLoadFadeInEvent -= EnablePlayerInput;
-        Lua.UnregisterFunction("PlayerSleep");
         Lua.UnregisterFunction("DisablePlayerInput");
         Lua.UnregisterFunction("EnablePlayerInput");
     }
@@ -99,7 +98,6 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
         EventHandler.BeforeSceneUnloadFadeOutEvent += DisablePlayerInputAndResetMovement;
         EventHandler.AfterSceneLoadFadeInEvent += EnablePlayerInput;
-        Lua.RegisterFunction("PlayerSleep", this, SymbolExtensions.GetMethodInfo(() => PlayerSleep()));
         Lua.RegisterFunction("DisablePlayerInput", this, SymbolExtensions.GetMethodInfo(() => DisablePlayerInput()));
         Lua.RegisterFunction("EnablePlayerInput", this, SymbolExtensions.GetMethodInfo(() => EnablePlayerInput()));
     }
@@ -207,11 +205,11 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 }
             }
 
-            // // Trigger sleep
-            // if (playerIsOnTheBed && Input.GetKeyDown(KeyCode.E))
-            // {
-            //     PlayerSleep();
-            // }
+            // Trigger sleep
+            if (playerIsOnTheBed && Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R))
+            {
+                UIManager.Instance.OpenSleepUI();
+            }
 
             if (isFillWater && Input.GetKeyDown(KeyCode.E))
             {
@@ -298,6 +296,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             Stamina = Settings.playerInitialPenaltyStamina;
 
             TimeManager.Instance.TestAdvancePenaltyGameDay();
+            StaminaController.Instance.IncraseStamina(Stamina);
         }
         else if (TimeManager.Instance.GameHour >= 0 && TimeManager.Instance.GameHour <= 4 && Stamina > 10)
         {
@@ -307,6 +306,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
             // set time to penalty at 8 oclock
             TimeManager.Instance.TestAdvanceNormalPenaltyGameDay();
+            StaminaController.Instance.IncraseStamina(Stamina);
         }
         else
         {
@@ -315,6 +315,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             Stamina = DefaultStamina;
 
             TimeManager.Instance.TestAdvanceNormalGameDay();
+            StaminaController.Instance.IncraseStamina(Stamina);
         }
 
         EventHandler.CallAdvanceGameDayEvent(TimeManager.Instance.GameYear, TimeManager.Instance.GameSeason, TimeManager.Instance.GameDay, TimeManager.Instance.GameDayOfWeek, TimeManager.Instance.GameHour, TimeManager.Instance.GameMinute, TimeManager.Instance.GameSecond);
@@ -325,7 +326,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
         {
             instantiateCrop = true;
         }
-        playerInputIsDisabled = false;
+        // playerInputIsDisabled = false;
     }
 
     private void ProcessPlayerClickInput(Vector3Int cursorGridPosition, Vector3Int playerGridPosition)
@@ -363,20 +364,21 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 case ItemType.Collecting_tool:
                 case ItemType.Breaking_tool:
                 case ItemType.Reaping_tool:
-                    if (Stamina == 50)
+                    if (Stamina == 50 && gridCursor.CursorPositionIsValid || cursor.CursorPositionIsValid)
                     {
                         // TODO: Change animation
                         // Stamina 50 animation
                         StartCoroutine(StaminaFifty(playerDirection, gridPropertyDetails));
                         Debug.Log("Stamina Fifty");
                     }
-                    else if (Stamina <= 0)
+                    else if (Stamina <= 0 && gridCursor.CursorPositionIsValid || cursor.CursorPositionIsValid)
                     {
                         // Stamina Zero animation
                         StartCoroutine(StaminaZero(playerDirection, gridPropertyDetails));
                         Debug.Log("Stamina abis");
                     }
-                    else if (Stamina > 0)
+
+                    if (Stamina > 0)
                     {
                         ProcessPlayerClickInputTool(gridPropertyDetails, itemDetails, playerDirection);
                     }
@@ -397,6 +399,8 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
     private IEnumerator StaminaZero(Vector3Int playerDirection, GridPropertyDetails gridPropertyDetails)
     {
+        // TODO: set animation
+
         playerInputIsDisabled = true;
         playerToolUseDisabled = true;
 
@@ -406,7 +410,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 Flip();
             }
-            anim.SetBool(isStaminaZero, true);
+            // anim.SetBool(isStaminaZero, true);
         }
         else if (playerDirection == Vector3Int.left)
         {
@@ -414,7 +418,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 Flip();
             }
-            anim.SetBool(isStaminaZero, true);
+            // anim.SetBool(isStaminaZero, true);
         }
 
         yield return useToolAnimationPause;
@@ -422,7 +426,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
         // After animation pause
         yield return afterUseToolAnimationPause;
 
-        anim.SetBool(isStaminaZero, false);
+        // anim.SetBool(isStaminaZero, false);
 
         playerInputIsDisabled = false;
         playerToolUseDisabled = false;
@@ -430,6 +434,8 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
     private IEnumerator StaminaFifty(Vector3Int playerDirection, GridPropertyDetails gridPropertyDetails)
     {
+        // TODO: set animation
+
         playerInputIsDisabled = true;
         playerToolUseDisabled = true;
 
@@ -439,7 +445,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 Flip();
             }
-            anim.SetBool(isStaminaZero, true);
+            // anim.SetBool(isStaminaZero, true);
         }
         else if (playerDirection == Vector3Int.left)
         {
@@ -447,7 +453,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 Flip();
             }
-            anim.SetBool(isStaminaZero, true);
+            // anim.SetBool(isStaminaZero, true);
         }
 
         yield return useToolAnimationPause;
@@ -455,7 +461,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
         // After animation pause
         yield return afterUseToolAnimationPause;
 
-        anim.SetBool(isStaminaZero, false);
+        // anim.SetBool(isStaminaZero, false);
 
         playerInputIsDisabled = false;
         playerToolUseDisabled = false;
@@ -560,6 +566,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
         {
             // Decrease the stamina
             Stamina -= 2;
+            StaminaController.Instance.IncraseStamina(Stamina);
 
             // Update grid properties with seed details
             gridPropertyDetails.seedItemCode = itemDetails.itemCode;
@@ -593,6 +600,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 {
                     // Decrease the stamina
                     Stamina -= 2;
+                    StaminaController.Instance.IncraseStamina(Stamina);
 
                     HoeGroundAtCursor(gridPropertyDetails, playerDirection);
                 }
@@ -603,6 +611,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 {
                     // Decrease the stamina
                     Stamina -= 1;
+                    StaminaController.Instance.IncraseStamina(Stamina);
 
                     WaterGroundAtCursor(gridPropertyDetails, playerDirection);
                 }
@@ -613,6 +622,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 {
                     // Decrease the stamina
                     Stamina -= 2;
+                    StaminaController.Instance.IncraseStamina(Stamina);
 
                     ChopInPlayerDirection(gridPropertyDetails, itemDetails, playerDirection);
                 }
@@ -622,6 +632,8 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 if (gridCursor.CursorPositionIsValid)
                 {
                     Stamina -= 1;
+                    StaminaController.Instance.IncraseStamina(Stamina);
+
                     CollectInPlayerDirection(gridPropertyDetails, itemDetails, playerDirection);
                 }
                 break;
@@ -631,6 +643,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 {
                     // Decrease the stamina
                     Stamina -= 2;
+                    StaminaController.Instance.IncraseStamina(Stamina);
 
                     BreakInPlayerDirection(gridPropertyDetails, itemDetails, playerDirection);
                 }
@@ -641,6 +654,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 {
                     // Decrease the stamina
                     Stamina -= 1;
+                    StaminaController.Instance.IncraseStamina(Stamina);
 
                     playerDirection = GetPlayerDirection(cursor.GetWorldPositionForCursor(), GetPlayerCentrePosition());
                     ReapInPlayerDirectionAtCursor(itemDetails, playerDirection);
@@ -1065,6 +1079,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 Stamina = defaultStamina;
             }
+            StaminaController.Instance.IncraseStamina(Stamina);
             Debug.Log("Makan kentang, singkong, tomat, labu " + Stamina);
         }
         if (Input.GetKeyDown(KeyCode.U))
@@ -1074,6 +1089,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 Stamina = defaultStamina;
             }
+            StaminaController.Instance.IncraseStamina(Stamina);
             Debug.Log("Makan Tanaman Herbal " + Stamina);
         }
         if (Input.GetKeyDown(KeyCode.I))
@@ -1083,6 +1099,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 Stamina = defaultStamina;
             }
+            StaminaController.Instance.IncraseStamina(Stamina);
             Debug.Log("Makan Jahe " + Stamina);
         }
         if (Input.GetKeyDown(KeyCode.O))
@@ -1091,6 +1108,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 DefaultStamina += 2;
             }
+            StaminaController.Instance.IncraseMaxStamina(DefaultStamina);
             Debug.Log("Makan Tanaman Herbal, default stamina bertambah" + defaultStamina + ", namun stamina tidak" + Stamina);
         }
         if (Input.GetKeyDown(KeyCode.P))
@@ -1101,11 +1119,13 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
         if (Input.GetKeyDown(KeyCode.L)) // if the weather is raining
         {
             Stamina -= 2 + (2 * 50 / 100);
+            StaminaController.Instance.IncraseStamina(Stamina);
             Debug.Log(Stamina);
         }
         if (Input.GetKeyDown(KeyCode.K)) // if the weather is raining
         {
             Stamina -= 1 + (1 * 50 / 100);
+            StaminaController.Instance.IncraseStamina(Stamina);
             Debug.Log(Stamina);
         }
     }

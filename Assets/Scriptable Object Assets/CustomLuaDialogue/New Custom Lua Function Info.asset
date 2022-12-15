@@ -14,12 +14,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   conditionFunctions: []
   scriptFunctions:
-  - functionName: Player/Sleep
-    parameters: 
-    returnValue: 0
   - functionName: Player/EnablePlayerInput
     parameters: 
     returnValue: 0
   - functionName: Player/DisablePlayerInput
+    parameters: 
+    returnValue: 0
+  - functionName: Player/PlayerSleep
     parameters: 
     returnValue: 0

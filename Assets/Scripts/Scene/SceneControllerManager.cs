@@ -86,6 +86,8 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
 
         // Call after scene load fade in event
         EventHandler.CallAfterSceneLoadFadeInEvent();
+
+        Player.Instance.playerInputIsDisabled = false;
     }
 
 
