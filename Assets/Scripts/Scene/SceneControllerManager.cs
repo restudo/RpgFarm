@@ -23,12 +23,14 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
         faderCanvasGroup.blocksRaycasts = true;
 
         float fadeSpeed = 0;
+
         if (!Player.Instance.playerIsOnTheBed)
         {
             // Calculate how fast the CanvasGroup should fade based on it's current alpha, it's final alpha and how long it has to change between the two.
             fadeSpeed = Mathf.Abs(faderCanvasGroup.alpha - finalAlpha) / fadeDuration;
         }
-        else
+
+        if (Player.Instance.playerIsOnTheBed || TimeManager.Instance.overSlept)
         {
             fadeSpeed = Mathf.Abs(faderCanvasGroup.alpha - finalAlpha) / fadeDurationWhenSleeping;
         }
@@ -88,6 +90,7 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
         EventHandler.CallAfterSceneLoadFadeInEvent();
 
         Player.Instance.playerInputIsDisabled = false;
+        TimeManager.Instance.overSlept = false;
     }
 
 

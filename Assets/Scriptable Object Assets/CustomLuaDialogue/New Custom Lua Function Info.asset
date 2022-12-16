@@ -12,7 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dbbc84c70300ba489dc1fe1961516ec, type: 3}
   m_Name: New Custom Lua Function Info
   m_EditorClassIdentifier: 
-  conditionFunctions: []
+  conditionFunctions:
+  - functionName: Hours
+    parameters: 
+    returnValue: 2
+  - functionName: Days
+    parameters: 
+    returnValue: 2
+  - functionName: Seasons
+    parameters: 
+    returnValue: 2
   scriptFunctions:
   - functionName: Player/EnablePlayerInput
     parameters: 

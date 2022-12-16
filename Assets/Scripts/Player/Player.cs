@@ -206,7 +206,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             }
 
             // Trigger sleep
-            if (playerIsOnTheBed && Input.GetKeyDown(KeyCode.E) || Input.GetKeyDown(KeyCode.R))
+            if (playerIsOnTheBed && Input.GetKeyDown(KeyCode.E))
             {
                 UIManager.Instance.OpenSleepUI();
             }

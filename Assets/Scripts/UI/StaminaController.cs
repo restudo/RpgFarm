@@ -2,12 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class StaminaController : SingletonMonobehaviour<StaminaController>
 {
     [SerializeField] private Slider staminaSlider;
     [SerializeField] private Sprite[] moodSprite;
     [SerializeField] private GameObject moodObj;
+    [SerializeField] private TextMeshProUGUI staminaText;
     private Image moodImage;
 
     protected override void Awake()
@@ -22,15 +24,19 @@ public class StaminaController : SingletonMonobehaviour<StaminaController>
         // initial stamina
         staminaSlider.maxValue = Player.Instance._stamina;
         staminaSlider.value = Player.Instance.Stamina;
-        if (Player.Instance.Stamina >= 60)
+        staminaText.text = staminaSlider.value.ToString() + " / " + staminaSlider.maxValue;
+
+        float percentage = Mathf.InverseLerp(staminaSlider.minValue, staminaSlider.maxValue, Player.Instance.Stamina) * 100;
+
+        if (percentage >= 60)
         {
             moodImage.sprite = moodSprite[0];
         }
-        else if (Player.Instance.Stamina < 60 && Player.Instance.Stamina >= 30)
+        else if (percentage < 60 && percentage >= 30)
         {
             moodImage.sprite = moodSprite[1];
         }
-        else if (Player.Instance.Stamina < 30 && Player.Instance.Stamina >= 0)
+        else if (percentage < 30 && percentage >= 0)
         {
             moodImage.sprite = moodSprite[2];
         }
@@ -39,16 +45,19 @@ public class StaminaController : SingletonMonobehaviour<StaminaController>
     public void IncraseStamina(int currentStamina)
     {
         staminaSlider.value = currentStamina;
+        staminaText.text = staminaSlider.value.ToString() + " / " + staminaSlider.maxValue;
 
-        if (Player.Instance.Stamina >= 60)
+        float percentage = Mathf.InverseLerp(staminaSlider.minValue, staminaSlider.maxValue, Player.Instance.Stamina) * 100;
+
+        if (percentage >= 60)
         {
             moodImage.sprite = moodSprite[0];
         }
-        else if (Player.Instance.Stamina < 60 && Player.Instance.Stamina >= 30)
+        else if (percentage < 60 && percentage >= 30)
         {
             moodImage.sprite = moodSprite[1];
         }
-        else if (Player.Instance.Stamina < 30 && Player.Instance.Stamina >= 0)
+        else if (percentage < 30 && percentage >= 0)
         {
             moodImage.sprite = moodSprite[2];
         }
@@ -57,5 +66,7 @@ public class StaminaController : SingletonMonobehaviour<StaminaController>
     public void IncraseMaxStamina(int currentMaxStamina)
     {
         staminaSlider.maxValue = currentMaxStamina;
+
+        staminaText.text = staminaSlider.value.ToString() + " / " + staminaSlider.maxValue;
     }
 }

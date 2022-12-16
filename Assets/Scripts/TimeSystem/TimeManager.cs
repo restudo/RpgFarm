@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using UnityEngine;
+using PixelCrushers.DialogueSystem;
 
 public class TimeManager : SingletonMonobehaviour<TimeManager>, ISaveable
 {
@@ -21,6 +22,7 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>, ISaveable
     public string GameDayOfWeek { get => gameDayOfWeek; }
 
     private bool gameClockPaused = false;
+    [HideInInspector] public bool overSlept = false;
 
     private float gameTick = 0f;
 
@@ -44,6 +46,10 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>, ISaveable
 
         EventHandler.BeforeSceneUnloadEvent += BeforeSceneUnloadFadeOut;
         EventHandler.AfterSceneLoadEvent += AfterSceneLoadFadeIn;
+
+        Lua.RegisterFunction("Hours", this, SymbolExtensions.GetMethodInfo(() => Hours()));
+        Lua.RegisterFunction("Seasons", this, SymbolExtensions.GetMethodInfo(() => Seasons()));
+        Lua.RegisterFunction("Days", this, SymbolExtensions.GetMethodInfo(() => Days()));
     }
 
     private void OnDisable()
@@ -52,6 +58,10 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>, ISaveable
 
         EventHandler.BeforeSceneUnloadEvent -= BeforeSceneUnloadFadeOut;
         EventHandler.AfterSceneLoadEvent -= AfterSceneLoadFadeIn;
+
+        Lua.UnregisterFunction("Hours");
+        Lua.UnregisterFunction("Seasons");
+        Lua.UnregisterFunction("Days");
     }
 
     private void BeforeSceneUnloadFadeOut()
@@ -88,6 +98,7 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>, ISaveable
 
         if (gameHour == 4)
         {
+            overSlept = true;
             OverSlept();
         }
     }
@@ -156,6 +167,7 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>, ISaveable
                     }
 
                     gameDayOfWeek = GetDayOfWeek();
+                    EventHandler.CallAdvanceGameDayEvent(gameYear, gameSeason, gameDay, gameDayOfWeek, gameHour, gameMinute, gameSecond);
 
                 }
 
@@ -363,5 +375,18 @@ public class TimeManager : SingletonMonobehaviour<TimeManager>, ISaveable
     public void ISaveableRestoreScene(string sceneName)
     {
         // Nothing required here since Time Manager is running on the persistent scene
+    }
+
+    public double Hours()
+    { // Note: Lua always passes numbers as doubles.
+        return GameHour;
+    }
+    public double Seasons()
+    { // Note: Lua always passes numbers as doubles.
+        return (double)GameSeason;
+    }
+    public double Days()
+    { // Note: Lua always passes numbers as doubles.
+        return GameDay;
     }
 }
