@@ -419,7 +419,7 @@ GameObject:
   - component: {fileID: 733121279}
   - component: {fileID: 733121283}
   m_Layer: 0
-  m_Name: kasur
+  m_Name: Bed
   m_TagString: Bed
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -438,7 +438,7 @@ BoxCollider2D:
   m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 4.6, y: 6.1217446}
+  m_Offset: {x: 0, y: 12.8}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
@@ -449,7 +449,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 22, y: 2.4625616}
+  m_Size: {x: 30.41, y: 15.37}
   m_EdgeRadius: 0
 --- !u!61 &733121280
 BoxCollider2D:
@@ -537,7 +537,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 733121277}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 43.69225, y: -6.179128, z: 37.30078}
+  m_LocalPosition: {x: 35.75, y: -6.15, z: 37.30078}
   m_LocalScale: {x: 0.08, y: 0.08, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -557,7 +557,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 274b80ab5b659c646ba9338870d14625, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  overrideName: 
+  overrideName: Bed
   overrideUseMessage: 
   maxUseDistance: 5
   events:

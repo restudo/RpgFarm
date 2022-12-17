@@ -89,6 +89,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
         EventHandler.AfterSceneLoadFadeInEvent -= EnablePlayerInput;
         Lua.UnregisterFunction("DisablePlayerInput");
         Lua.UnregisterFunction("EnablePlayerInput");
+        Lua.UnregisterFunction("PlayerSleep");
     }
 
 
@@ -100,6 +101,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
         EventHandler.AfterSceneLoadFadeInEvent += EnablePlayerInput;
         Lua.RegisterFunction("DisablePlayerInput", this, SymbolExtensions.GetMethodInfo(() => DisablePlayerInput()));
         Lua.RegisterFunction("EnablePlayerInput", this, SymbolExtensions.GetMethodInfo(() => EnablePlayerInput()));
+        Lua.RegisterFunction("PlayerSleep", this, SymbolExtensions.GetMethodInfo(() => PlayerSleep()));
     }
 
     void Start()
@@ -208,6 +210,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             // Trigger sleep
             if (playerIsOnTheBed && Input.GetKeyDown(KeyCode.E))
             {
+                DisablePlayerInputAndResetMovement();
                 UIManager.Instance.OpenSleepUI();
             }
 
@@ -218,6 +221,8 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
                 if (itemDetails != null && itemDetails.itemType == ItemType.Watering_tool)
                 {
+                    // TODO: set animation
+
                     WaterQuantity = 50;
                 }
             }
