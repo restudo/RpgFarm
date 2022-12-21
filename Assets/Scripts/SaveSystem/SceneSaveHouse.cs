@@ -2,6 +2,9 @@
 public class SceneSaveHouse
 {
     public Vector3Serializable position;
+    public int houseCode;
+    public bool isHouseRepaired01;
+    public bool isHouseRepaired02;
 
     public SceneSaveHouse()
     {

@@ -89,6 +89,8 @@ public class SceneControllerManager : SingletonMonobehaviour<SceneControllerMana
         // Call after scene load fade in event
         EventHandler.CallAfterSceneLoadFadeInEvent();
 
+        HouseManager.Instance.UpdateMemory();
+
         Player.Instance.playerInputIsDisabled = false;
         TimeManager.Instance.overSlept = false;
     }

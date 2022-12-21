@@ -12,6 +12,9 @@ TagManager:
   - Bed
   - Well
   - Chest
+  - House01
+  - House02
+  - Fader
   layers:
   - Default
   - TransparentFX

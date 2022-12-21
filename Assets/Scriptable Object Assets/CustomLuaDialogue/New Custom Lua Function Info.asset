@@ -32,3 +32,6 @@ MonoBehaviour:
   - functionName: Player/PlayerSleep
     parameters: 
     returnValue: 0
+  - functionName: RebuildHouse
+    parameters: 01000000
+    returnValue: 0
