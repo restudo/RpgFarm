@@ -564,6 +564,8 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
             inventoryItem.itemQuantity = 0;
             inventoryItem.itemCode = 0;
             sumItemInInventory -= 1;
+
+            inventoryBar.ClearCurrentlySelectedItems();
         }
 
         inventoryDict[itemPosition] = inventoryItem;

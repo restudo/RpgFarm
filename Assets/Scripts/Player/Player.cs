@@ -32,6 +32,10 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
     private Rigidbody2D rb;
     private Vector2 moveDirection;
     private float xInput, yInput;
+
+    private bool _canBeEaten = false;
+    public bool CanBeEaten { get => _canBeEaten; set => _canBeEaten = value; }
+
     private bool _playerInputIsDisabled = false;
     public bool playerInputIsDisabled { get => _playerInputIsDisabled; set => _playerInputIsDisabled = value; }
 
@@ -51,9 +55,16 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
     private int isHarvesting;
     private int isStaminaZero;
 
+    public int itemSelectedCode;
+    public int itemSelectedSlot;
+
 
     // camera
     private Camera mainCamera;
+
+
+    [Header("Item Selected"), Tooltip("Should be populated in the prefab with the equipped item sprite renderer")]
+    [SerializeField] private SpriteRenderer equippedItemSpriteRenderer = null;
 
     [Header("MoveController")]
     [SerializeField] private float moveSpeed;
@@ -214,6 +225,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 UIManager.Instance.OpenSleepUI();
             }
 
+            // fill watering can in well
             if (isFillWater && Input.GetKeyDown(KeyCode.E))
             {
                 // Get Selected item details
@@ -225,6 +237,27 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
                     WaterQuantity = 50;
                 }
+            }
+
+            if (Input.GetKeyDown(KeyCode.E) && CanBeEaten == true)
+            {
+                // TODO: set animation
+
+                if (itemSelectedCode == 10001) // pumpkin
+                {
+                    #region StartCoroutine Eating Animation
+                    Stamina += 2;
+                    if (Stamina >= defaultStamina)
+                    {
+                        Stamina = defaultStamina;
+                    }
+                    StaminaController.Instance.IncraseStamina(Stamina);
+                    Debug.Log("Makan kentang, singkong, tomat, labu " + Stamina);
+
+                    InventoryManager.Instance.RemoveItem(InventoryLocation.player, itemSelectedCode, itemSelectedSlot);
+                    #endregion
+                }
+                // else if (itemSelectedCode == BlaBlaBla....)
             }
         }
     }
@@ -1154,6 +1187,22 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
     public void EnablePlayerInput()
     {
         playerInputIsDisabled = false;
+    }
+
+    public void ClearCarriedItem()
+    {
+        equippedItemSpriteRenderer.sprite = null;
+        equippedItemSpriteRenderer.color = new Color(1f, 1f, 1f, 0f);
+    }
+
+    public void ShowCarriedItem(int itemCode)
+    {
+        ItemDetails itemDetails = InventoryManager.Instance.GetItemDetails(itemCode);
+        if (itemDetails != null)
+        {
+            equippedItemSpriteRenderer.sprite = itemDetails.itemSprite;
+            equippedItemSpriteRenderer.color = new Color(1f, 1f, 1f, 1f);
+        }
     }
 
     void Flip()
