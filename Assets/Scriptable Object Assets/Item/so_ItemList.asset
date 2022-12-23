@@ -19,6 +19,7 @@ MonoBehaviour:
     itemSprite: {fileID: 21300000, guid: 730e572c78cf0244ca0db36bb8f3af7f, type: 3}
     itemLongDescription: From small acorns do large oak trees grow. One day this
       humble acorn could be a towering giant!
+    itemCost: 100
     itemUseGridRadius: 2
     itemUseRadius: 0
     isStartingItem: 0
@@ -32,6 +33,7 @@ MonoBehaviour:
     itemSprite: {fileID: 21300000, guid: f0d720006ae6c9e468cc99a9f1713ba1, type: 3}
     itemLongDescription: A juicy, fat, ripe pumpkin.  It makes great soup as well
       as a scary Halloween face!
+    itemCost: -1
     itemUseGridRadius: 2
     itemUseRadius: 0
     isStartingItem: 0
@@ -45,6 +47,7 @@ MonoBehaviour:
     itemSprite: {fileID: 21300000, guid: 081b5033ea188cb48b5d44b99ab920bc, type: 3}
     itemLongDescription: Juicy fresh corn - try it roasted on a BBQ smothered with
       butter and a health conscious sprinkling of salt and pepper!
+    itemCost: -1
     itemUseGridRadius: 2
     itemUseRadius: 0
     isStartingItem: 0
@@ -58,6 +61,7 @@ MonoBehaviour:
     itemSprite: {fileID: 21300136, guid: 853ac38383c680342ac7e688bf29b197, type: 3}
     itemLongDescription: The humble watering can - an essential tool for any budding
       farmer
+    itemCost: -1
     itemUseGridRadius: 1
     itemUseRadius: 0
     isStartingItem: 1
@@ -71,6 +75,7 @@ MonoBehaviour:
     itemSprite: {fileID: 21300052, guid: 853ac38383c680342ac7e688bf29b197, type: 3}
     itemLongDescription: A strong, sturdy basic hoe - great for breaking up the soil
       ready for planting
+    itemCost: -1
     itemUseGridRadius: 1
     itemUseRadius: 0
     isStartingItem: 1
@@ -83,6 +88,7 @@ MonoBehaviour:
     itemDescription: A Basic Axe
     itemSprite: {fileID: 21300010, guid: 853ac38383c680342ac7e688bf29b197, type: 3}
     itemLongDescription: A sharp, sturdy basic axe - great for chopping down trees
+    itemCost: -1
     itemUseGridRadius: 1
     itemUseRadius: 0
     isStartingItem: 1
@@ -95,6 +101,7 @@ MonoBehaviour:
     itemDescription: Parsnip Seed
     itemSprite: {fileID: 21300000, guid: 7da78110e28e0f74aaa3ef4a41f4c0ed, type: 3}
     itemLongDescription: Parsnip seeds take 5 days to grow
+    itemCost: 50
     itemUseGridRadius: 2
     itemUseRadius: 0
     isStartingItem: 0
@@ -107,6 +114,7 @@ MonoBehaviour:
     itemDescription: Parsnip
     itemSprite: {fileID: 21300000, guid: 0a1268bf801d5304ebf16458d7309ac1, type: 3}
     itemLongDescription: Parsnips are full of fibre and vitamins
+    itemCost: -1
     itemUseGridRadius: 2
     itemUseRadius: 0
     isStartingItem: 0
@@ -120,6 +128,7 @@ MonoBehaviour:
     itemSprite: {fileID: 21300000, guid: e26dc0d638731ec47abe9c4b3cae62ac, type: 3}
     itemLongDescription: Wood is useful for many things - from a building material
       to a fuel
+    itemCost: 50
     itemUseGridRadius: 2
     itemUseRadius: 0
     isStartingItem: 0
@@ -132,6 +141,7 @@ MonoBehaviour:
     itemDescription: Blue Spruce Pine Cone
     itemSprite: {fileID: 21300000, guid: 5eb84bf51d351da428f95a1296f6a397, type: 3}
     itemLongDescription: Pine cones are packed with seeds to grow new fir trees
+    itemCost: 70
     itemUseGridRadius: 1
     itemUseRadius: 0
     isStartingItem: 0
@@ -144,6 +154,7 @@ MonoBehaviour:
     itemDescription: Canyon Oak Tree Stump
     itemSprite: {fileID: 7154603021615155856, guid: d241c496741a12d4290e12ba81dd6724, type: 3}
     itemLongDescription: 
+    itemCost: -1
     itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 0
@@ -156,6 +167,7 @@ MonoBehaviour:
     itemDescription: Blue Spruce Tree Stump
     itemSprite: {fileID: -341119608263849502, guid: 5d22327a2a3d2a049a8a59a708d527fe, type: 3}
     itemLongDescription: The stump of a spruce tree
+    itemCost: -1
     itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 0
@@ -168,6 +180,7 @@ MonoBehaviour:
     itemDescription: Wicker Basket
     itemSprite: {fileID: 21300504, guid: 853ac38383c680342ac7e688bf29b197, type: 3}
     itemLongDescription: A wicker basket for harvesting produce you have grown
+    itemCost: -1
     itemUseGridRadius: 1
     itemUseRadius: 0
     isStartingItem: 1
@@ -180,6 +193,7 @@ MonoBehaviour:
     itemDescription: A Basic Pickaxe
     itemSprite: {fileID: 21300094, guid: 853ac38383c680342ac7e688bf29b197, type: 3}
     itemLongDescription: A strong, sturdy basic pickaxe - great for breaking rocks
+    itemCost: -1
     itemUseGridRadius: 1
     itemUseRadius: 0
     isStartingItem: 1
@@ -192,6 +206,7 @@ MonoBehaviour:
     itemDescription: Stone 1 Seed
     itemSprite: {fileID: 21300000, guid: 4fb548784c08c2c40b86a99493efa98d, type: 3}
     itemLongDescription: 
+    itemCost: -1
     itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 0
@@ -204,6 +219,7 @@ MonoBehaviour:
     itemDescription: Stone
     itemSprite: {fileID: 21300000, guid: 7700e9e59e6f58e4598ea8f2e5a84cc1, type: 3}
     itemLongDescription: Stone has many practical uses for crafting and building
+    itemCost: 40
     itemUseGridRadius: 2
     itemUseRadius: 0
     isStartingItem: 0
@@ -216,6 +232,7 @@ MonoBehaviour:
     itemDescription: Stone 2 Seed
     itemSprite: {fileID: 21300000, guid: ffd3a07e9702a614284d1e5a4be9f532, type: 3}
     itemLongDescription: 
+    itemCost: -1
     itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 0
@@ -228,6 +245,7 @@ MonoBehaviour:
     itemDescription: A Basic Scythe For Reaping
     itemSprite: {fileID: 21300506, guid: 853ac38383c680342ac7e688bf29b197, type: 3}
     itemLongDescription: A sharp, basic scythe - great for cutting grass
+    itemCost: -1
     itemUseGridRadius: 2
     itemUseRadius: 1.5
     isStartingItem: 1
@@ -240,6 +258,7 @@ MonoBehaviour:
     itemDescription: Grass1
     itemSprite: {fileID: 21300000, guid: 207ad99171e171b418bcaaa396d5a6f6, type: 3}
     itemLongDescription: 
+    itemCost: -1
     itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 0
@@ -252,6 +271,7 @@ MonoBehaviour:
     itemDescription: Grass2
     itemSprite: {fileID: 21300000, guid: e452dd2aa629f624390a9ba516a7c47e, type: 3}
     itemLongDescription: 
+    itemCost: -1
     itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 0
@@ -264,6 +284,7 @@ MonoBehaviour:
     itemDescription: Weed
     itemSprite: {fileID: 21300000, guid: 25925800440b0e84f9533a314ddca6b5, type: 3}
     itemLongDescription: Weed
+    itemCost: -1
     itemUseGridRadius: 2
     itemUseRadius: 0
     isStartingItem: 0
@@ -276,6 +297,7 @@ MonoBehaviour:
     itemDescription: Prickly Cactus
     itemSprite: {fileID: 21300000, guid: 37e09848a493a0a4b89a743f73f75963, type: 3}
     itemLongDescription: Prickly Cactus
+    itemCost: -1
     itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 0
@@ -288,6 +310,7 @@ MonoBehaviour:
     itemDescription: Chair
     itemSprite: {fileID: 21300000, guid: 2a61f48c8f2dfed4da6f2f8e2485ee15, type: 3}
     itemLongDescription: Chair
+    itemCost: -1
     itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 0
@@ -300,6 +323,7 @@ MonoBehaviour:
     itemDescription: Table
     itemSprite: {fileID: 21300000, guid: 60f7a57556be87841a8cabc94054df28, type: 3}
     itemLongDescription: Wooden Table
+    itemCost: -1
     itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 0
@@ -312,6 +336,7 @@ MonoBehaviour:
     itemDescription: Reapable
     itemSprite: {fileID: -8204859348171178890, guid: 5a1df36ac90cfa242908df77f9674580, type: 3}
     itemLongDescription: Wooden Table
+    itemCost: -1
     itemUseGridRadius: 0
     itemUseRadius: 0
     isStartingItem: 0

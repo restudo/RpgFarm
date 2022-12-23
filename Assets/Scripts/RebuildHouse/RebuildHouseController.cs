@@ -33,30 +33,19 @@ public class RebuildHouseController : MonoBehaviour
         // Lua.UnregisterFunction("RebuildHouse01");
         // Lua.UnregisterFunction("RebuildHouse02");
         Lua.UnregisterFunction("RebuildHouse");
+        Lua.UnregisterFunction("StaminaQtyCheck");
+        Lua.UnregisterFunction("MaterialWoodStone");
+        Lua.UnregisterFunction("DecreaseMaterial");
     }
 
     private void OnEnable()
     {
         Lua.RegisterFunction("RebuildHouse", this, SymbolExtensions.GetMethodInfo(() => RebuildHouse((double)0)));
+        Lua.RegisterFunction("StaminaQtyCheck", this, SymbolExtensions.GetMethodInfo(() => StaminaQtyCheck((double)0)));
+        Lua.RegisterFunction("MaterialWoodStone", this, SymbolExtensions.GetMethodInfo(() => MaterialWoodStone((double)0, (double)0)));
+        Lua.RegisterFunction("DecreaseMaterial", this, SymbolExtensions.GetMethodInfo(() => DecreaseMaterial((double)0, (double)0, (double)0)));
         // Lua.RegisterFunction("RebuildHouse01", this, SymbolExtensions.GetMethodInfo(() => RebuildHouse01()));
         // Lua.RegisterFunction("RebuildHouse02", this, SymbolExtensions.GetMethodInfo(() => RebuildHouse02()));
-    }
-
-    public void DestroyBrokenHouses(int houseNumber)
-    {
-        House[] house = FindObjectsOfType<House>();
-
-        for (int i = 0; i < house.Length; i++)
-        {
-            if (houseNumber == house[i].HouseCode && house[i].IsHouseRepaired01 == false)
-            {
-                Destroy(house[i].gameObject);
-            }
-            if (houseNumber == house[i].HouseCode && house[i].IsHouseRepaired02 == false)
-            {
-                Destroy(house[i].gameObject);
-            }
-        }
     }
 
     public void RebuildHouse(double houseIndex)
@@ -96,30 +85,75 @@ public class RebuildHouseController : MonoBehaviour
         Invoke("Conversation", 1f);
     }
 
+    public void DestroyBrokenHouses(int houseNumber)
+    {
+        House[] house = FindObjectsOfType<House>();
+
+        for (int i = 0; i < house.Length; i++)
+        {
+            if (houseNumber == house[i].HouseCode && house[i].IsHouseRepaired01 == false)
+            {
+                Destroy(house[i].gameObject);
+            }
+            if (houseNumber == house[i].HouseCode && house[i].IsHouseRepaired02 == false)
+            {
+                Destroy(house[i].gameObject);
+            }
+        }
+    }
     private void Conversation()
     {
         DialogueManager.StartConversation("HouseRepaired");
     }
 
-    // public void RebuildHouse01()
-    // {
-    //     DestroyBrokenHouses(1);
+    public bool MaterialWoodStone(double woodQty, double stoneQty)
+    {
+        // ItemDetails wood = InventoryManager.Instance.GetItemDetails(10008);
+        // ItemDetails stone = InventoryManager.Instance.GetItemDetails(10015);
 
-    //     Instantiate(repairedHouse01, spawnHouse01.position, Quaternion.identity, parentItem01);
+        int wood = InventoryManager.Instance.FindWoodInInventory(InventoryLocation.player, 10008);
+        int stone = InventoryManager.Instance.FindStoneInInventory(InventoryLocation.player, 10015);
 
-    //     HouseManager.Instance.numOfRebuildHouse = 1;
-    //     Debug.Log("num of rebuild house : " + HouseManager.Instance.numOfRebuildHouse);
+        if (stone >= stoneQty && wood >= woodQty)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
-    //     HouseManager.Instance.isPlayTimeline = true;
-    //     Debug.Log("isplayingTimeline ? " + HouseManager.Instance.isPlayTimeline);
-    // }
+    public bool StaminaQtyCheck(double staminaQty)
+    {
+        if (Player.Instance.Stamina >= staminaQty)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
-    // public void RebuildHouse02()
-    // {
-    //     DestroyBrokenHouses(2);
+    public void DecreaseMaterial(double woodQty, double stoneQty, double staminaQty)
+    {
+        for (int i = (int)woodQty; i > 0; i--)
+        {
+            int itemWoodPosition = InventoryManager.Instance.FindMaterialInInventory(InventoryLocation.player, 10008);
+            InventoryManager.Instance.RemoveItem(InventoryLocation.player, 10008, itemWoodPosition);
+        }
 
+        for (int i = (int)stoneQty; i > 0; i--)
+        {
+            int itemStonePosition = InventoryManager.Instance.FindMaterialInInventory(InventoryLocation.player, 10015);
+            InventoryManager.Instance.RemoveItem(InventoryLocation.player, 10015, itemStonePosition);
+        }
 
-    //     HouseManager.Instance.isPlayTimeline = true;
-    //     Debug.Log("isplayingTimeline ? " + HouseManager.Instance.isPlayTimeline);
-    // }
+        //  Send event that inventory has been updated
+        EventHandler.CallInventoryUpdatedEvent(InventoryLocation.player, InventoryManager.Instance.inventoryDictionaries[(int)InventoryLocation.player]);
+
+        Player.Instance.Stamina -= (int)staminaQty;
+        StaminaController.Instance.UpdateStamina(Player.Instance.Stamina);
+    }
 }

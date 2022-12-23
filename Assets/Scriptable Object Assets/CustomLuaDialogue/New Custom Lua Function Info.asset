@@ -22,6 +22,12 @@ MonoBehaviour:
   - functionName: Seasons
     parameters: 
     returnValue: 2
+  - functionName: MaterialWoodStone
+    parameters: 0100000001000000
+    returnValue: 1
+  - functionName: StaminaQtyCheck
+    parameters: 01000000
+    returnValue: 1
   scriptFunctions:
   - functionName: Player/EnablePlayerInput
     parameters: 
@@ -34,4 +40,7 @@ MonoBehaviour:
     returnValue: 0
   - functionName: RebuildHouse
     parameters: 01000000
+    returnValue: 0
+  - functionName: DecreaseMaterial
+    parameters: 010000000100000001000000
     returnValue: 0

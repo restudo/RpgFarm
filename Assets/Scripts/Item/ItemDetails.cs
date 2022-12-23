@@ -2,13 +2,14 @@
 using UnityEngine;
 
 [System.Serializable]
-public class ItemDetails 
+public class ItemDetails
 {
     public int itemCode;
     public ItemType itemType;
     public string itemDescription;
     public Sprite itemSprite;
     public string itemLongDescription;
+    public int itemCost; // set to -1 if not sellable
     public short itemUseGridRadius;
     public float itemUseRadius;
     public bool isStartingItem;

@@ -12,6 +12,9 @@ public class StaminaController : SingletonMonobehaviour<StaminaController>
     [SerializeField] private TextMeshProUGUI staminaText;
     private Image moodImage;
 
+    private float time;
+    private float lerpSpeed = 0.25f;
+
     protected override void Awake()
     {
         base.Awake();
@@ -42,10 +45,16 @@ public class StaminaController : SingletonMonobehaviour<StaminaController>
         }
     }
 
-    public void IncraseStamina(int currentStamina)
+    private void Update()
     {
-        staminaSlider.value = currentStamina;
-        staminaText.text = staminaSlider.value.ToString() + " / " + staminaSlider.maxValue;
+        SmoothSlider();
+    }
+
+    public void UpdateStamina(int currentStamina)
+    {
+        time = 0;
+        // staminaSlider.value = currentStamina;
+        staminaText.text = Player.Instance.Stamina + " / " + staminaSlider.maxValue;
 
         float percentage = Mathf.InverseLerp(staminaSlider.minValue, staminaSlider.maxValue, Player.Instance.Stamina) * 100;
 
@@ -68,5 +77,11 @@ public class StaminaController : SingletonMonobehaviour<StaminaController>
         staminaSlider.maxValue = currentMaxStamina;
 
         staminaText.text = staminaSlider.value.ToString() + " / " + staminaSlider.maxValue;
+    }
+
+    private void SmoothSlider()
+    {
+        time += Time.deltaTime * lerpSpeed;
+        staminaSlider.value = Mathf.Lerp(staminaSlider.value, Player.Instance.Stamina, time);
     }
 }

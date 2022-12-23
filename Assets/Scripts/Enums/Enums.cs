@@ -20,7 +20,8 @@ public enum SceneName
     Scene1_Farm,
     Scene2_Field,
     Scene3_Cabin,
-    Scene4_NpcHouse01
+    Scene4_NpcHouse01,
+    Scene5_Shop
 }
 
 public enum Season

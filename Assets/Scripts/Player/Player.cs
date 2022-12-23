@@ -251,7 +251,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                     {
                         Stamina = defaultStamina;
                     }
-                    StaminaController.Instance.IncraseStamina(Stamina);
+                    StaminaController.Instance.UpdateStamina(Stamina);
                     Debug.Log("Makan kentang, singkong, tomat, labu " + Stamina);
 
                     InventoryManager.Instance.RemoveItem(InventoryLocation.player, itemSelectedCode, itemSelectedSlot);
@@ -334,7 +334,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             Stamina = Settings.playerInitialPenaltyStamina;
 
             TimeManager.Instance.TestAdvancePenaltyGameDay();
-            StaminaController.Instance.IncraseStamina(Stamina);
+            StaminaController.Instance.UpdateStamina(Stamina);
         }
         else if (TimeManager.Instance.GameHour >= 0 && TimeManager.Instance.GameHour <= 4 && Stamina > 10)
         {
@@ -344,7 +344,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
             // set time to penalty at 8 oclock
             TimeManager.Instance.TestAdvanceNormalPenaltyGameDay();
-            StaminaController.Instance.IncraseStamina(Stamina);
+            StaminaController.Instance.UpdateStamina(Stamina);
         }
         else
         {
@@ -353,7 +353,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             Stamina = DefaultStamina;
 
             TimeManager.Instance.TestAdvanceNormalGameDay();
-            StaminaController.Instance.IncraseStamina(Stamina);
+            StaminaController.Instance.UpdateStamina(Stamina);
         }
 
         EventHandler.CallAdvanceGameDayEvent(TimeManager.Instance.GameYear, TimeManager.Instance.GameSeason, TimeManager.Instance.GameDay, TimeManager.Instance.GameDayOfWeek, TimeManager.Instance.GameHour, TimeManager.Instance.GameMinute, TimeManager.Instance.GameSecond);
@@ -604,7 +604,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
         {
             // Decrease the stamina
             Stamina -= 2;
-            StaminaController.Instance.IncraseStamina(Stamina);
+            StaminaController.Instance.UpdateStamina(Stamina);
 
             // Update grid properties with seed details
             gridPropertyDetails.seedItemCode = itemDetails.itemCode;
@@ -638,7 +638,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 {
                     // Decrease the stamina
                     Stamina -= 2;
-                    StaminaController.Instance.IncraseStamina(Stamina);
+                    StaminaController.Instance.UpdateStamina(Stamina);
 
                     HoeGroundAtCursor(gridPropertyDetails, playerDirection);
                 }
@@ -649,7 +649,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 {
                     // Decrease the stamina
                     Stamina -= 1;
-                    StaminaController.Instance.IncraseStamina(Stamina);
+                    StaminaController.Instance.UpdateStamina(Stamina);
 
                     WaterGroundAtCursor(gridPropertyDetails, playerDirection);
                 }
@@ -660,7 +660,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 {
                     // Decrease the stamina
                     Stamina -= 2;
-                    StaminaController.Instance.IncraseStamina(Stamina);
+                    StaminaController.Instance.UpdateStamina(Stamina);
 
                     ChopInPlayerDirection(gridPropertyDetails, itemDetails, playerDirection);
                 }
@@ -670,7 +670,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 if (gridCursor.CursorPositionIsValid)
                 {
                     Stamina -= 1;
-                    StaminaController.Instance.IncraseStamina(Stamina);
+                    StaminaController.Instance.UpdateStamina(Stamina);
 
                     CollectInPlayerDirection(gridPropertyDetails, itemDetails, playerDirection);
                 }
@@ -681,7 +681,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 {
                     // Decrease the stamina
                     Stamina -= 2;
-                    StaminaController.Instance.IncraseStamina(Stamina);
+                    StaminaController.Instance.UpdateStamina(Stamina);
 
                     BreakInPlayerDirection(gridPropertyDetails, itemDetails, playerDirection);
                 }
@@ -692,7 +692,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
                 {
                     // Decrease the stamina
                     Stamina -= 1;
-                    StaminaController.Instance.IncraseStamina(Stamina);
+                    StaminaController.Instance.UpdateStamina(Stamina);
 
                     playerDirection = GetPlayerDirection(cursor.GetWorldPositionForCursor(), GetPlayerCentrePosition());
                     ReapInPlayerDirectionAtCursor(itemDetails, playerDirection);
@@ -1117,7 +1117,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 Stamina = defaultStamina;
             }
-            StaminaController.Instance.IncraseStamina(Stamina);
+            StaminaController.Instance.UpdateStamina(Stamina);
             Debug.Log("Makan kentang, singkong, tomat, labu " + Stamina);
         }
         if (Input.GetKeyDown(KeyCode.U))
@@ -1127,7 +1127,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 Stamina = defaultStamina;
             }
-            StaminaController.Instance.IncraseStamina(Stamina);
+            StaminaController.Instance.UpdateStamina(Stamina);
             Debug.Log("Makan Tanaman Herbal " + Stamina);
         }
         if (Input.GetKeyDown(KeyCode.I))
@@ -1137,7 +1137,7 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
             {
                 Stamina = defaultStamina;
             }
-            StaminaController.Instance.IncraseStamina(Stamina);
+            StaminaController.Instance.UpdateStamina(Stamina);
             Debug.Log("Makan Jahe " + Stamina);
         }
         if (Input.GetKeyDown(KeyCode.O))
@@ -1157,14 +1157,20 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
         if (Input.GetKeyDown(KeyCode.L)) // if the weather is raining
         {
             Stamina -= 2 + (2 * 50 / 100);
-            StaminaController.Instance.IncraseStamina(Stamina);
+            StaminaController.Instance.UpdateStamina(Stamina);
             Debug.Log(Stamina);
         }
         if (Input.GetKeyDown(KeyCode.K)) // if the weather is raining
         {
             Stamina -= 1 + (1 * 50 / 100);
-            StaminaController.Instance.IncraseStamina(Stamina);
+            StaminaController.Instance.UpdateStamina(Stamina);
             Debug.Log(Stamina);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Z))
+        {
+            Stamina -= 50;
+            StaminaController.Instance.UpdateStamina(Stamina);
         }
     }
 

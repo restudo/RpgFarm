@@ -149,6 +149,36 @@ MonoBehaviour:
       value: False
       type: 2
       typeString: CustomFieldType_Boolean
+    - title: Display Name
+      value: ' '
+      type: 0
+      typeString: 
+    portrait: {fileID: 0}
+    spritePortrait: {fileID: 0}
+    alternatePortraits: []
+    spritePortraits: []
+  - id: 6
+    fields:
+    - title: Name
+      value: Broken House 02
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: Pictures
+      value: '[]'
+      type: 3
+      typeString: CustomFieldType_Files
+    - title: Description
+      value: 
+      type: 0
+      typeString: CustomFieldType_Text
+    - title: IsPlayer
+      value: False
+      type: 2
+      typeString: CustomFieldType_Boolean
+    - title: Display Name
+      value: ' '
+      type: 0
+      typeString: 
     portrait: {fileID: 0}
     spritePortrait: {fileID: 0}
     alternatePortraits: []
@@ -1533,7 +1563,7 @@ MonoBehaviour:
         type: 0
         typeString: CustomFieldType_Text
       - title: Dialogue Text
-        value: Wanna rebuild this house???, it cost .... wood and .... stone
+        value: Wanna rebuild this house???, it cost 8 wood, 6 stone and 50 Stamina.
         type: 0
         typeString: CustomFieldType_Text
       - title: Sequence
@@ -1621,6 +1651,12 @@ MonoBehaviour:
         destinationDialogueID: 5
         isConnector: 0
         priority: 2
+      - originConversationID: 3
+        originDialogueID: 2
+        destinationConversationID: 3
+        destinationDialogueID: 6
+        isConnector: 0
+        priority: 2
       conditionsString: 
       userScript: 
       onExecute:
@@ -1628,7 +1664,7 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 378.6842
+        x: 427.3684
         y: 30
         width: 160
         height: 30
@@ -1677,8 +1713,8 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 380
-        y: 81.31578
+        x: 427.36844
+        y: 80
         width: 160
         height: 30
     - id: 4
@@ -1719,15 +1755,18 @@ MonoBehaviour:
       falseConditionAction: Block
       conditionPriority: 2
       outgoingLinks: []
-      conditionsString: 
-      userScript: RebuildHouse(1)
+      conditionsString: MaterialWoodStone(8, 6)  == true and (StaminaQtyCheck(50) 
+        == true)
+      userScript: 'DecreaseMaterial(8, 6, 50);
+
+        RebuildHouse(1)'
       onExecute:
         m_PersistentCalls:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 561.3158
-        y: 30
+        x: 657.36835
+        y: 24.736847
         width: 160
         height: 30
     - id: 5
@@ -1753,7 +1792,7 @@ MonoBehaviour:
         type: 0
         typeString: CustomFieldType_Text
       - title: Dialogue Text
-        value: Oh it seems you havent got those material
+        value: Sepertinya materialmu kurang
         type: 0
         typeString: CustomFieldType_Text
       - title: Sequence
@@ -1768,30 +1807,79 @@ MonoBehaviour:
       falseConditionAction: Block
       conditionPriority: 2
       outgoingLinks: []
-      conditionsString: 
+      conditionsString: MaterialWoodStone(8, 6)  == false
       userScript: 
       onExecute:
         m_PersistentCalls:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 560
-        y: 80
+        x: 658.6842
+        y: 78.684204
+        width: 160
+        height: 30
+    - id: 6
+      fields:
+      - title: Title
+        value: 
+        type: 0
+        typeString: CustomFieldType_Text
+      - title: Description
+        value: 
+        type: 0
+        typeString: CustomFieldType_Text
+      - title: Actor
+        value: 4
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Conversant
+        value: 1
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Menu Text
+        value: 
+        type: 0
+        typeString: CustomFieldType_Text
+      - title: Dialogue Text
+        value: Sepertinya kamu sangat lelah kembali lagi jika sudah fit
+        type: 0
+        typeString: CustomFieldType_Text
+      - title: Sequence
+        value: 
+        type: 0
+        typeString: CustomFieldType_Text
+      conversationID: 3
+      isRoot: 0
+      isGroup: 0
+      nodeColor: 
+      delaySimStatus: 0
+      falseConditionAction: Block
+      conditionPriority: 2
+      outgoingLinks: []
+      conditionsString: StaminaQtyCheck(50)  == false
+      userScript: 
+      onExecute:
+        m_PersistentCalls:
+          m_Calls: []
+      canvasRect:
+        serializedVersion: 2
+        x: 658.9473
+        y: 128.68419
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 24.170832, y: 3.7851434}
+    canvasScrollPosition: {x: 1.8023987, y: 0}
     canvasZoom: 0.7600002
   - id: 4
     fields:
     - title: Title
       value: Broken House/02
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     - title: Description
       value: 
       type: 0
-      typeString: 
+      typeString: CustomFieldType_Text
     - title: Actor
       value: 4
       type: 5
@@ -1879,7 +1967,7 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 30
+        x: 125.74469
         y: 20
         width: 160
         height: 30
@@ -1906,7 +1994,7 @@ MonoBehaviour:
         type: 0
         typeString: CustomFieldType_Text
       - title: Dialogue Text
-        value: wanna rebuild? it cost... wood and ... stone
+        value: wanna rebuild? it cost 12 wood, 20 stone and 50 Stamina
         type: 0
         typeString: CustomFieldType_Text
       - title: Sequence
@@ -1940,8 +2028,8 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 118
-        y: 77
+        x: 123.31915
+        y: 68.48935
         width: 160
         height: 30
     - id: 2
@@ -1994,6 +2082,12 @@ MonoBehaviour:
         destinationDialogueID: 5
         isConnector: 0
         priority: 2
+      - originConversationID: 4
+        originDialogueID: 2
+        destinationConversationID: 4
+        destinationDialogueID: 6
+        isConnector: 0
+        priority: 2
       conditionsString: 
       userScript: 
       onExecute:
@@ -2001,8 +2095,8 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 311
-        y: 69
+        x: 312.06384
+        y: 70.06383
         width: 160
         height: 30
     - id: 3
@@ -2050,8 +2144,8 @@ MonoBehaviour:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 118
-        y: 127
+        x: 123.31914
+        y: 125.93617
         width: 160
         height: 30
     - id: 4
@@ -2092,15 +2186,18 @@ MonoBehaviour:
       falseConditionAction: Block
       conditionPriority: 2
       outgoingLinks: []
-      conditionsString: 
-      userScript: RebuildHouse(2)
+      conditionsString: MaterialWoodStone(12, 20)  == true and (StaminaQtyCheck(50) 
+        == true)
+      userScript: 'RebuildHouse(2);
+
+        DecreaseMaterial(12, 20, 50)'
       onExecute:
         m_PersistentCalls:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 495
-        y: 69.06383
+        x: 504
+        y: 72
         width: 160
         height: 30
     - id: 5
@@ -2126,7 +2223,7 @@ MonoBehaviour:
         type: 0
         typeString: CustomFieldType_Text
       - title: Dialogue Text
-        value: not enough material
+        value: Material mu kurang tuh
         type: 0
         typeString: CustomFieldType_Text
       - title: Sequence
@@ -2141,19 +2238,68 @@ MonoBehaviour:
       falseConditionAction: Block
       conditionPriority: 2
       outgoingLinks: []
-      conditionsString: 
+      conditionsString: MaterialWoodStone(12, 20)  == false
       userScript: 
       onExecute:
         m_PersistentCalls:
           m_Calls: []
       canvasRect:
         serializedVersion: 2
-        x: 311
-        y: 119
+        x: 313.12766
+        y: 126.44681
+        width: 160
+        height: 30
+    - id: 6
+      fields:
+      - title: Title
+        value: 
+        type: 0
+        typeString: CustomFieldType_Text
+      - title: Description
+        value: 
+        type: 0
+        typeString: CustomFieldType_Text
+      - title: Actor
+        value: 4
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Conversant
+        value: 1
+        type: 5
+        typeString: CustomFieldType_Actor
+      - title: Menu Text
+        value: 
+        type: 0
+        typeString: CustomFieldType_Text
+      - title: Dialogue Text
+        value: Kamu tidak fit, kembali lagi jika sudah mempunyai tenaga seperti kuli
+        type: 0
+        typeString: CustomFieldType_Text
+      - title: Sequence
+        value: 
+        type: 0
+        typeString: CustomFieldType_Text
+      conversationID: 4
+      isRoot: 0
+      isGroup: 0
+      nodeColor: 
+      delaySimStatus: 0
+      falseConditionAction: Block
+      conditionPriority: 2
+      outgoingLinks: []
+      conditionsString: StaminaQtyCheck(50)  == false
+      userScript: 
+      onExecute:
+        m_PersistentCalls:
+          m_Calls: []
+      canvasRect:
+        serializedVersion: 2
+        x: 498.234
+        y: 127.510635
         width: 160
         height: 30
     entryGroups: []
-    canvasScrollPosition: {x: 150, y: 3.1914902}
+    canvasScrollPosition: {x: 0, y: 9.574478}
     canvasZoom: 0.94000006
   - id: 5
     fields:

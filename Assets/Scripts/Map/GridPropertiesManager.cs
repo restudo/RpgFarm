@@ -680,6 +680,8 @@ public class GridPropertiesManager : SingletonMonobehaviour<GridPropertiesManage
             {
                 isFirstTimeSceneLoaded = true;
             }
+
+
         }
     }
     public GameObjectSave ISaveableSave()
