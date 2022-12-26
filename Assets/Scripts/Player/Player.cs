@@ -54,9 +54,11 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
     private int isUsingWateringCan;
     private int isHarvesting;
     private int isStaminaZero;
+    private int isCarriedItem;
+    private int isEating;
 
-    public int itemSelectedCode;
-    public int itemSelectedSlot;
+    [HideInInspector] public int itemSelectedCode;
+    [HideInInspector] public int itemSelectedSlot;
 
 
     // camera
@@ -129,6 +131,8 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
         isUsingScythe = Animator.StringToHash("isUsingScythe");
         isUsingWateringCan = Animator.StringToHash("isUsingWateringCan");
         isStaminaZero = Animator.StringToHash("isStaminaZero");
+        isCarriedItem = Animator.StringToHash("isCarriedItem");
+        isEating = Animator.StringToHash("isEating");
 
         anim = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
@@ -241,25 +245,43 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
             if (Input.GetKeyDown(KeyCode.E) && CanBeEaten == true)
             {
-                // TODO: set animation
-
-                if (itemSelectedCode == 10001) // pumpkin
-                {
-                    #region StartCoroutine Eating Animation
-                    Stamina += 2;
-                    if (Stamina >= defaultStamina)
-                    {
-                        Stamina = defaultStamina;
-                    }
-                    StaminaController.Instance.IncraseStamina(Stamina);
-                    Debug.Log("Makan kentang, singkong, tomat, labu " + Stamina);
-
-                    InventoryManager.Instance.RemoveItem(InventoryLocation.player, itemSelectedCode, itemSelectedSlot);
-                    #endregion
-                }
-                // else if (itemSelectedCode == BlaBlaBla....)
+                StartCoroutine(EatAnimation());
             }
         }
+    }
+
+    private void Eating()
+    {
+        StartCoroutine(EatAnimation());
+    }
+
+    private IEnumerator EatAnimation()
+    {
+        playerInputIsDisabled = true;
+        playerToolUseDisabled = true;
+
+        anim.SetBool(isEating, true);
+
+        yield return pickAnimationPause;
+
+        if (itemSelectedCode == 10001) // pumpkin
+        {
+            Stamina += 2;
+            if (Stamina >= defaultStamina)
+            {
+                Stamina = defaultStamina;
+            }
+            StaminaController.Instance.IncraseStamina(Stamina);
+            Debug.Log("Makan kentang, singkong, tomat, labu " + Stamina);
+
+            InventoryManager.Instance.RemoveItem(InventoryLocation.player, itemSelectedCode, itemSelectedSlot);
+        }
+        // else if (itemSelectedCode == BlaBlaBla....)
+
+        anim.SetBool(isEating, false);
+
+        playerInputIsDisabled = false;
+        playerToolUseDisabled = false;
     }
 
     /// <summary>
@@ -1191,12 +1213,16 @@ public class Player : SingletonMonobehaviour<Player>, ISaveable
 
     public void ClearCarriedItem()
     {
+        anim.SetBool(isCarriedItem, false);
+
         equippedItemSpriteRenderer.sprite = null;
         equippedItemSpriteRenderer.color = new Color(1f, 1f, 1f, 0f);
     }
 
     public void ShowCarriedItem(int itemCode)
     {
+        anim.SetBool(isCarriedItem, true);
+
         ItemDetails itemDetails = InventoryManager.Instance.GetItemDetails(itemCode);
         if (itemDetails != null)
         {
