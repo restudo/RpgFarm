@@ -444,6 +444,55 @@ public class InventoryManager : SingletonMonobehaviour<InventoryManager>, ISavea
         return -1;
     }
 
+    public int FindMaterialInInventory(InventoryLocation inventoryLocation, int itemCode)
+    {
+        Dictionary<int, InventoryItem> inventoryDict = inventoryDictionaries[(int)inventoryLocation];
+
+        foreach (KeyValuePair<int, InventoryItem> item in inventoryDict)
+        {
+            if (item.Value.itemCode == itemCode)
+            {
+                return item.Key;
+            }
+        }
+
+        return -1;
+    }
+
+    public int FindWoodInInventory(InventoryLocation inventoryLocation, int itemCode)
+    {
+        int sumQty = 0;
+
+        Dictionary<int, InventoryItem> inventoryDict = inventoryDictionaries[(int)inventoryLocation];
+
+        foreach (KeyValuePair<int, InventoryItem> item in inventoryDict)
+        {
+            if (item.Value.itemCode == itemCode)
+            {
+                sumQty += item.Value.itemQuantity;
+            }
+        }
+
+        return sumQty;
+    }
+
+    public int FindStoneInInventory(InventoryLocation inventoryLocation, int itemCode)
+    {
+        int sumQty = 0;
+
+        Dictionary<int, InventoryItem> inventoryDict = inventoryDictionaries[(int)inventoryLocation];
+
+        foreach (KeyValuePair<int, InventoryItem> item in inventoryDict)
+        {
+            if (item.Value.itemCode == itemCode)
+            {
+                sumQty += item.Value.itemQuantity;
+            }
+        }
+
+        return sumQty;
+    }
+
     /// <summary>
     /// Returns the itemDetails (from the SO_ItemList) for the itemCode, or null if the item code doesn't exist
     /// </summary>

@@ -30,16 +30,25 @@ public class RebuildHouseController : MonoBehaviour
 
     private void OnDisable()
     {
-        // Lua.UnregisterFunction("RebuildHouse01");
-        // Lua.UnregisterFunction("RebuildHouse02");
         Lua.UnregisterFunction("RebuildHouse");
+        Lua.UnregisterFunction("StaminaQtyCheck");
+        Lua.UnregisterFunction("MaterialWoodStone");
+        Lua.UnregisterFunction("DecreaseMaterial");
     }
 
     private void OnEnable()
     {
         Lua.RegisterFunction("RebuildHouse", this, SymbolExtensions.GetMethodInfo(() => RebuildHouse((double)0)));
-        // Lua.RegisterFunction("RebuildHouse01", this, SymbolExtensions.GetMethodInfo(() => RebuildHouse01()));
-        // Lua.RegisterFunction("RebuildHouse02", this, SymbolExtensions.GetMethodInfo(() => RebuildHouse02()));
+        Lua.RegisterFunction("StaminaQtyCheck", this, SymbolExtensions.GetMethodInfo(() => StaminaQtyCheck((double)0)));
+        Lua.RegisterFunction("MaterialWoodStone", this, SymbolExtensions.GetMethodInfo(() => MaterialWoodStone((double)0, (double)0)));
+        Lua.RegisterFunction("DecreaseMaterial", this, SymbolExtensions.GetMethodInfo(() => DecreaseMaterial((double)0, (double)0, (double)0)));
+    }
+
+    public void RebuildHouse(double houseIndex)
+    {
+        faderAnim.SetBool("isFade", true);
+
+        StartCoroutine(Rebuild(houseIndex, 2f));
     }
 
     public void DestroyBrokenHouses(int houseNumber)
@@ -57,13 +66,6 @@ public class RebuildHouseController : MonoBehaviour
                 Destroy(house[i].gameObject);
             }
         }
-    }
-
-    public void RebuildHouse(double houseIndex)
-    {
-        faderAnim.SetBool("isFade", true);
-
-        StartCoroutine(Rebuild(houseIndex, 2f));
     }
 
     IEnumerator Rebuild(double houseIndex, float waitTime)
@@ -101,25 +103,52 @@ public class RebuildHouseController : MonoBehaviour
         DialogueManager.StartConversation("HouseRepaired");
     }
 
-    // public void RebuildHouse01()
-    // {
-    //     DestroyBrokenHouses(1);
+    public bool MaterialWoodStone(double woodQty, double stoneQty)
+    {
 
-    //     Instantiate(repairedHouse01, spawnHouse01.position, Quaternion.identity, parentItem01);
+        int wood = InventoryManager.Instance.FindWoodInInventory(InventoryLocation.player, 10008);
+        int stone = InventoryManager.Instance.FindStoneInInventory(InventoryLocation.player, 10015);
 
-    //     HouseManager.Instance.numOfRebuildHouse = 1;
-    //     Debug.Log("num of rebuild house : " + HouseManager.Instance.numOfRebuildHouse);
+        if (stone >= stoneQty && wood >= woodQty)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
-    //     HouseManager.Instance.isPlayTimeline = true;
-    //     Debug.Log("isplayingTimeline ? " + HouseManager.Instance.isPlayTimeline);
-    // }
+    public bool StaminaQtyCheck(double staminaQty)
+    {
+        if (Player.Instance.Stamina >= staminaQty)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
-    // public void RebuildHouse02()
-    // {
-    //     DestroyBrokenHouses(2);
+    public void DecreaseMaterial(double woodQty, double stoneQty, double staminaQty)
+    {
+        for (int i = (int)woodQty; i > 0; i--)
+        {
+            int itemWoodPosition = InventoryManager.Instance.FindMaterialInInventory(InventoryLocation.player, 10008);
+            InventoryManager.Instance.RemoveItem(InventoryLocation.player, 10008, itemWoodPosition);
+        }
 
+        for (int i = (int)stoneQty; i > 0; i--)
+        {
+            int itemStonePosition = InventoryManager.Instance.FindMaterialInInventory(InventoryLocation.player, 10015);
+            InventoryManager.Instance.RemoveItem(InventoryLocation.player, 10015, itemStonePosition);
+        }
 
-    //     HouseManager.Instance.isPlayTimeline = true;
-    //     Debug.Log("isplayingTimeline ? " + HouseManager.Instance.isPlayTimeline);
-    // }
+        //  Send event that inventory has been updated
+        EventHandler.CallInventoryUpdatedEvent(InventoryLocation.player, InventoryManager.Instance.inventoryDictionaries[(int)InventoryLocation.player]);
+
+        Player.Instance.Stamina -= (int)staminaQty;
+        StaminaController.Instance.UpdateStamina(Player.Instance.Stamina);
+    }
 }

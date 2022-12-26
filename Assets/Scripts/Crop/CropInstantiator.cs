@@ -31,7 +31,7 @@ public class CropInstantiator : MonoBehaviour
         grid = GameObject.FindObjectOfType<Grid>();
 
         // Get grid position for crop
-        Vector3Int cropPosition = new Vector3Int(Random.Range(-20, 20), Random.Range(-30, 30), 0);
+        Vector3Int cropPosition = new Vector3Int(Random.Range(-37, 37), Random.Range(-26, 0), 0);
 
         // Set Crop Grid Properties
         SetCropGridProperties(cropPosition);
@@ -54,9 +54,15 @@ public class CropInstantiator : MonoBehaviour
                 gridPropertyDetails = new GridPropertyDetails();
             }
 
-            if (gridPropertyDetails.daysSinceDug > -1)
+            while (gridPropertyDetails.daysSinceDug > -1)
             {
-                cropPosition = new Vector3Int(Random.Range(-20, 20), Random.Range(-30, 30), 0);
+                cropPosition = new Vector3Int(Random.Range(-37, 37), Random.Range(-26, 0), 0);
+                gridPropertyDetails = GridPropertiesManager.Instance.GetGridPropertyDetails(cropPosition.x, cropPosition.y);
+            }
+
+            while (gridPropertyDetails.canPlaceFurniture)
+            {
+                cropPosition = new Vector3Int(Random.Range(-37, 37), Random.Range(-26, 0), 0);
                 gridPropertyDetails = GridPropertiesManager.Instance.GetGridPropertyDetails(cropPosition.x, cropPosition.y);
             }
 
